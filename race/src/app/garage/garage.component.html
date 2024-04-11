@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="icon" #iconElement>nika</div>
+</div>
+<!-- <button (click)="startAnimation()">Start Animation</button> -->
+
+<button [routerLink]="['/garage']">GARAGE</button>
+<button [routerLink]="['/winners']">WINNERS</button>
+
+<form [formGroup]="garageFG">
+  <input type="text" formControlName="createNameFC" />
+  <input type="color" formControlName="createColorFC" />
+  <button (click)="onCreateCar()">create Car</button>
+</form>
+
+<button (click)="startAnimation()">start Race</button>
+
+<section>
+  @for (car of garageService.cars; track car.id) {
+  <div class="car-card">
+    <div class="button-container">
+      <div>
+        <button>select</button>
+        <button>remove</button>
+      </div>
+      <div>
+        <button (click)="startAnimation(car.id)">start</button>
+        <button>stop</button>
+      </div>
+    </div>
+    <div [class]="'car-data car-svg car-' + car.id">
+      <svg
+        version="1.1"
+        id="Icons"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 32 32"
+        xml:space="preserve"
+        style="width: 50px"
+      >
+        <style type="text/css">
+          .st0 {
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-miterlimit: 10;
+          }
+        </style>
+        <circle
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          cx="7"
+          cy="23"
+          r="3"
+        />
+        <circle
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          cx="23"
+          cy="23"
+          r="3"
+        />
+        <line
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          x1="28"
+          y1="19"
+          x2="30"
+          y2="19"
+        />
+        <line
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          x1="4"
+          y1="16"
+          x2="24"
+          y2="16"
+        />
+        <line
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          x1="13"
+          y1="10"
+          x2="10"
+          y2="16"
+        />
+        <path
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          d="M26,23h4c0.6,0,1-0.4,1-1v-2c0-2.2-1.8-4-4-4h-3l-3.8-4.6c-0.8-0.9-1.9-1.4-3.1-1.4H9.5c-1.5,0-2.9,0.9-3.6,2.2
+       L4,16H3c-1.1,0-2,0.9-2,2v4c0,0.6,0.4,1,1,1h2"
+        />
+        <line
+          [ngStyle]="{ stroke: car.color }"
+          class="st0"
+          x1="10"
+          y1="23"
+          x2="20"
+          y2="23"
+        />
+      </svg>
+    </div>
+    <div class="car-data">{{ car.name }}</div>
+  </div>
+  }
+</section>
