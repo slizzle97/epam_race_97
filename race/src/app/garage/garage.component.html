@@ -1,8 +1,3 @@
-<div class="container">
-  <div class="icon" #iconElement>nika</div>
-</div>
-<!-- <button (click)="startAnimation()">Start Animation</button> -->
-
 <button [routerLink]="['/garage']">GARAGE</button>
 <button [routerLink]="['/winners']">WINNERS</button>
 
@@ -10,21 +5,27 @@
   <input type="text" formControlName="createNameFC" />
   <input type="color" formControlName="createColorFC" />
   <button (click)="onCreateCar()">create Car</button>
+
+  update car
+  <input type="text" formControlName="updateNameFC" />
+  <input type="color" formControlName="updateColorFC" />
+  <button (click)="onUpdateCars()">update Car</button>
 </form>
 
-<button (click)="startAnimation()">start Race</button>
+<button (click)="startStopCar(garageService.cars)">start Race</button>
+<button (click)="resetAnimation()">start Race</button>
 
 <section>
   @for (car of garageService.cars; track car.id) {
   <div class="car-card">
     <div class="button-container">
       <div>
-        <button>select</button>
-        <button>remove</button>
+        <button (click)="selectCar(car)">select</button>
+        <button (click)="onDeleteCar(car.id)">remove</button>
       </div>
       <div>
-        <button (click)="startAnimation(car.id)">start</button>
-        <button>stop</button>
+        <button (click)="startStopCar(car)">start</button>
+        <button (click)="resetAnimation(car.id)">stop</button>
       </div>
     </div>
     <div [class]="'car-data car-svg car-' + car.id">
