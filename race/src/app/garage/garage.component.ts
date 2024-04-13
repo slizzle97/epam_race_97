@@ -3,12 +3,17 @@ import { Component, ElementRef, OnInit } from '@angular/core';
 import {
   AnimationBuilder,
   AnimationFactory,
-  AnimationPlayer,
   animate,
   style,
 } from '@angular/animations';
 import { RouterModule } from '@angular/router';
-import { GarageService, car } from './garage-service.service';
+import {
+  GarageService,
+  animatedCarI,
+  car,
+  carSpecs,
+  isCarDrivable,
+} from './garage-service.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
@@ -40,36 +45,44 @@ export class GarageComponent implements OnInit {
     });
   }
 
-  private animationPlayers: { [key: number]: AnimationPlayer } = {};
-  startAnimation(time: number, carID?: number) {
+  public animationPlayers: animatedCarI[] = [];
+  startAnimation(duration: number, carID?: number) {
     const screenWidth = window.innerWidth;
     const startPosition = 'translateX(0)';
     const endPosition = `translateX(${screenWidth - 300}px)`;
-
+    console.log(duration);
     const animation = this.animationBuilder.build([
       style({ transform: startPosition }),
-      animate(time + 's', style({ transform: endPosition })),
+      animate(duration + 's', style({ transform: endPosition })),
     ]);
-
-    if (carID) {
-      this.playAnimation(animation, carID);
-    } else {
-      this.garageService.cars.forEach((car) => {
-        this.playAnimation(animation, car.id);
-      });
+    console.log(duration);
+    if (duration != 0) {
+      if (carID) {
+        this.playAnimation(animation, carID);
+      } else {
+        this.garageService.cars.forEach((car) => {
+          this.playAnimation(animation, car.id);
+        });
+      }
     }
   }
   private playAnimation(animation: AnimationFactory, carID: number) {
     const player = animation.create(document.querySelector('.car-' + carID));
-    this.animationPlayers[carID] = player;
+    this.animationPlayers.push({ id: carID, player: player });
     player.play();
+    console.log(this.animationPlayers);
   }
 
   resetAnimation(carID?: number) {
-    if (carID !== undefined && this.animationPlayers[carID]) {
-      this.animationPlayers[carID].reset();
-    } else {
-      console.log('');
+    console.log(this.animationPlayers);
+    if (carID !== undefined && this.animationPlayers.length == 1) {
+      this.animationPlayers[0].player.reset();
+      this.animationPlayers = [];
+    } else if (this.animationPlayers.length != 0) {
+      this.animationPlayers.forEach((player, index) => {
+        player.player.reset();
+        this.animationPlayers.splice(index, 1);
+      });
     }
   }
 
@@ -108,17 +121,66 @@ export class GarageComponent implements OnInit {
     });
     this.updateCarData = car;
   }
-  startStopCar(car: car | car[]) {
+
+  onStartCar(car: car | car[]) {
     if (Array.isArray(car)) {
       car.forEach((singleCar) => {
-        this.garageService.startStopCar(singleCar).subscribe((res) => {
-          this.startAnimation(res.distance / res.velocity, singleCar.id);
-        });
+        this.garageService
+          .carAction<carSpecs>(singleCar, 'started')
+          .subscribe((startResult) => {
+            if (startResult.velocity) {
+              this.garageService
+                .carAction<isCarDrivable>(singleCar, 'drive')
+                .subscribe((driveResult) => {
+                  if (driveResult) {
+                    this.startAnimation(
+                      startResult.distance / (startResult.velocity * 1000),
+                      singleCar.id
+                    );
+                  }
+                });
+            }
+          });
       });
     } else {
-      this.garageService.startStopCar(car).subscribe((res) => {
-        this.startAnimation(res.distance / res.velocity, car.id);
+      this.garageService
+        .carAction<carSpecs>(car, 'started')
+        .subscribe((startResult) => {
+          if (startResult.velocity) {
+            this.garageService
+              .carAction<isCarDrivable>(car, 'drive')
+              .subscribe((driveResult) => {
+                if (driveResult) {
+                  this.startAnimation(
+                    startResult.distance / (startResult.velocity * 1000),
+                    car.id
+                  );
+                }
+              });
+          }
+        });
+    }
+  }
+  onStopCar(animatedCars: car | animatedCarI[]) {
+    console.log(animatedCars);
+    if (Array.isArray(animatedCars)) {
+      animatedCars.forEach((singleCar: animatedCarI) => {
+        this.garageService
+          .carAction<carSpecs>(singleCar, 'stopped')
+          .subscribe((stopResult) => {
+            if (stopResult.velocity == 0) {
+              this.resetAnimation(singleCar.id);
+            }
+          });
       });
+    } else {
+      this.garageService
+        .carAction<carSpecs>(animatedCars, 'stopped')
+        .subscribe((stopResult) => {
+          if (stopResult.velocity == 0) {
+            this.resetAnimation(animatedCars.id);
+          }
+        });
     }
   }
 }

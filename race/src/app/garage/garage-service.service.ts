@@ -1,3 +1,4 @@
+import { AnimationPlayer } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -11,9 +12,16 @@ interface createCar {
   name: string;
   color: string;
 }
-interface carSpecs {
+export interface carSpecs {
   velocity: number;
   distance: number;
+}
+export interface isCarDrivable {
+  success: boolean;
+}
+export interface animatedCarI {
+  id: number;
+  player: AnimationPlayer;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,9 +30,11 @@ export class GarageService {
 
   cars: car[] = [];
 
+  domainURL: string = 'http://127.0.0.1:3000';
+
   getCars() {
     this.http
-      .get<car[]>('http://127.0.0.1:3000/garage')
+      .get<car[]>(`${this.domainURL}/garage`)
       .subscribe((res) => (this.cars = res));
   }
   createCar(body: createCar) {
@@ -32,7 +42,7 @@ export class GarageService {
       'Content-Type': 'application/json',
     });
     this.http
-      .post('http://127.0.0.1:3000/garage', body, { headers })
+      .post('${this.domainURL}/garage', body, { headers })
       .subscribe((res) => {
         this.getCars();
         console.log(res);
@@ -40,7 +50,7 @@ export class GarageService {
   }
 
   deleteCar(id: number) {
-    this.http.delete(`http://127.0.0.1:3000/garage/${id}`).subscribe((res) => {
+    this.http.delete(`${this.domainURL}/garage/${id}`).subscribe((res) => {
       this.getCars();
       console.log(res);
     });
@@ -51,7 +61,7 @@ export class GarageService {
     });
     this.http
       .put(
-        `http://127.0.0.1:3000/garage/${car.id}`,
+        `${this.domainURL}/garage/${car.id}`,
         { color: car.color, name: car.name },
         { headers }
       )
@@ -61,10 +71,10 @@ export class GarageService {
       });
   }
 
-  startStopCar(car: car): Observable<carSpecs> {
-    return this.http.patch<carSpecs>(
-      `http://127.0.0.1:3000/garage/?id=${car.id}&status=started`,
+  carAction<U>(car: car | animatedCarI, driveMode: string): Observable<U> {
+    return this.http.patch(
+      `${this.domainURL}/engine/?id=${car.id}&status=${driveMode}`,
       {}
-    );
+    ) as Observable<U>;
   }
 }

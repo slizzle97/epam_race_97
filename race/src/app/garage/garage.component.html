@@ -12,8 +12,8 @@
   <button (click)="onUpdateCars()">update Car</button>
 </form>
 
-<button (click)="startStopCar(garageService.cars)">start Race</button>
-<button (click)="resetAnimation()">start Race</button>
+<button (click)="onStartCar(garageService.cars)">start Race</button>
+<button (click)="onStopCar(animationPlayers)">reset Race</button>
 
 <section>
   @for (car of garageService.cars; track car.id) {
@@ -24,8 +24,8 @@
         <button (click)="onDeleteCar(car.id)">remove</button>
       </div>
       <div>
-        <button (click)="startStopCar(car)">start</button>
-        <button (click)="resetAnimation(car.id)">stop</button>
+        <button (click)="onStartCar(car)">start</button>
+        <button (click)="onStopCar(car)">stop</button>
       </div>
     </div>
     <div [class]="'car-data car-svg car-' + car.id">
