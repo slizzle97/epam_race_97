@@ -1,14 +1,14 @@
 import { AnimationPlayer } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface car {
   name: string;
   color: string;
   id: number;
 }
-interface createCar {
+export interface createCar {
   name: string;
   color: string;
 }
@@ -22,6 +22,7 @@ export interface isCarDrivable {
 export interface animatedCarI {
   id: number;
   player: AnimationPlayer;
+  animationPosition?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +32,53 @@ export class GarageService {
   cars: car[] = [];
 
   domainURL: string = 'http://127.0.0.1:3000';
+  brandParts: string[] = [
+    'Tesla',
+    'Ford',
+    'Chevrolet',
+    'Toyota',
+    'Honda',
+    'BMW',
+    'Mercedes-Benz',
+    'Audi',
+    'Volkswagen',
+    'Nissan',
+  ];
+  modelParts: string[] = [
+    'Model S',
+    'Mustang',
+    'Camaro',
+    'Corolla',
+    'Accord',
+    'X5',
+    'E-Class',
+    'A7',
+    'Golf',
+    'Altima',
+  ];
+
+  private pageChangeSub = new BehaviorSubject<boolean>(false);
+  public pageChange$ = this.pageChangeSub.asObservable();
+
+  getRandomColor(): string {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+  generateRandomEl(array: string[]): string {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+  generateRandomCar() {
+    const brandPart = this.generateRandomEl(this.brandParts);
+    const modelPart = this.generateRandomEl(this.modelParts);
+    return `${brandPart} ${modelPart}`;
+  }
+  onPagechange() {
+    this.pageChangeSub.next(!this.pageChangeSub.value);
+  }
 
   getCars() {
     this.http
@@ -42,17 +90,15 @@ export class GarageService {
       'Content-Type': 'application/json',
     });
     this.http
-      .post('${this.domainURL}/garage', body, { headers })
-      .subscribe((res) => {
+      .post(`${this.domainURL}/garage`, body, { headers })
+      .subscribe(() => {
         this.getCars();
-        console.log(res);
       });
   }
 
   deleteCar(id: number) {
-    this.http.delete(`${this.domainURL}/garage/${id}`).subscribe((res) => {
+    this.http.delete(`${this.domainURL}/garage/${id}`).subscribe(() => {
       this.getCars();
-      console.log(res);
     });
   }
   updateCars(car: car) {
@@ -65,9 +111,8 @@ export class GarageService {
         { color: car.color, name: car.name },
         { headers }
       )
-      .subscribe((res) => {
+      .subscribe(() => {
         this.getCars();
-        console.log(res);
       });
   }
 

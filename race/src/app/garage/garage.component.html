@@ -12,12 +12,12 @@
   <button (click)="onUpdateCars()">update Car</button>
 </form>
 
-<button (click)="onStartCar(garageService.cars)">start Race</button>
+<button (click)="onStartCar(getPaginatedCars())">start Race</button>
 <button (click)="onStopCar(animationPlayers)">reset Race</button>
 
+<button (click)="onGenerateCars()">generate</button>
 <section>
-  @for (car of garageService.cars; track car.id) {
-  <div class="car-card">
+  <div class="car-card" *ngFor="let car of getPaginatedCars()">
     <div class="button-container">
       <div>
         <button (click)="selectCar(car)">select</button>
@@ -103,5 +103,20 @@
     </div>
     <div class="car-data">{{ car.name }}</div>
   </div>
-  }
+  <div class="pagination">
+    <button (click)="currentPage = currentPage > 1 ? currentPage - 1 : 1">
+      Previous
+    </button>
+    <span>Page {{ currentPage }} of {{ getTotalPages() }}</span>
+    <button
+      (click)="
+        currentPage =
+          currentPage < getTotalPages() ? currentPage + 1 : getTotalPages()
+      "
+    >
+      Next
+    </button>
+  </div>
+
+  <!-- } -->
 </section>

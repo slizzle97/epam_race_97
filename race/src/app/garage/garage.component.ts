@@ -12,15 +12,17 @@ import {
   animatedCarI,
   car,
   carSpecs,
+  createCar,
   isCarDrivable,
 } from './garage-service.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { catchError, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-garage',
   standalone: true,
-  imports: [RouterModule, CommonModule, ReactiveFormsModule],
+  imports: [RouterModule, CommonModule, ReactiveFormsModule, NgFor],
   templateUrl: './garage.component.html',
   styleUrl: './garage.component.css',
 })
@@ -29,6 +31,7 @@ export class GarageComponent implements OnInit {
 
   ngOnInit(): void {
     this.garageService.getCars();
+    this.applyAnimationStyling();
   }
   garageFG: FormGroup;
   constructor(
@@ -39,23 +42,27 @@ export class GarageComponent implements OnInit {
   ) {
     this.garageFG = fb.group({
       createNameFC: [''],
-      createColorFC: [''],
+      createColorFC: ['#000'],
       updateNameFC: [''],
       updateColorFC: [''],
     });
   }
 
   public animationPlayers: animatedCarI[] = [];
+  animationState: { [carId: number]: string } = {};
   startAnimation(duration: number, carID?: number) {
     const screenWidth = window.innerWidth;
+    const savedPosition = this.animationPlayers.find(
+      (player) => player.id === carID
+    )?.animationPosition;
     const startPosition = 'translateX(0)';
-    const endPosition = `translateX(${screenWidth - 300}px)`;
-    console.log(duration);
+    const endPosition = savedPosition
+      ? `translateX(${screenWidth * savedPosition}px)`
+      : `translateX(${screenWidth - 300}px)`;
     const animation = this.animationBuilder.build([
       style({ transform: startPosition }),
       animate(duration + 's', style({ transform: endPosition })),
     ]);
-    console.log(duration);
     if (duration != 0) {
       if (carID) {
         this.playAnimation(animation, carID);
@@ -68,29 +75,56 @@ export class GarageComponent implements OnInit {
   }
   private playAnimation(animation: AnimationFactory, carID: number) {
     const player = animation.create(document.querySelector('.car-' + carID));
-    this.animationPlayers.push({ id: carID, player: player });
     player.play();
-    console.log(this.animationPlayers);
+    this.animationPlayers.push({
+      id: carID,
+      player: player,
+    });
+    // after animation is done, so the car reached the finish line, its position is saved, so that after paging, it's position is not lost;
+    player.onDone(() => {
+      this.animationPlayers = this.animationPlayers.map(
+        (player: animatedCarI) => {
+          if (player.id === carID) {
+            return {
+              ...player,
+              animationPosition: player.player.getPosition(),
+            };
+          } else {
+            return player;
+          }
+        }
+      );
+    });
   }
-
+  // reseting car to its inital position. Two cases: 1. reset car with its own reset button. 2. reset all cars that have been animated;
   resetAnimation(carID?: number) {
-    console.log(this.animationPlayers);
-    if (carID !== undefined && this.animationPlayers.length == 1) {
-      this.animationPlayers[0].player.reset();
-      this.animationPlayers = [];
-    } else if (this.animationPlayers.length != 0) {
-      this.animationPlayers.forEach((player, index) => {
-        player.player.reset();
-        this.animationPlayers.splice(index, 1);
+    this.animationPlayers.forEach((player, index) => {
+      if (carID !== undefined) {
+        if (player.id == carID) {
+          player.player.reset();
+          this.animationPlayers.splice(index, 1);
+        }
+      } else if (this.animationPlayers.length != 0) {
+        this.animationPlayers.forEach((player, index) => {
+          player.player.reset();
+          this.animationPlayers.splice(index, 1);
+        });
+      }
+    });
+  }
+  stopAnimation(carID: number) {
+    if (carID) {
+      this.animationPlayers.forEach((player) => {
+        if (player.id == carID) {
+          player.player.pause();
+          player.animationPosition = player.player.getPosition();
+        }
       });
     }
   }
 
   onCreateCar() {
-    const body: {
-      name: string;
-      color: string;
-    } = {
+    const body: createCar = {
       name: this.garageFG.get('createNameFC')?.value,
       color: this.garageFG.get('createColorFC')?.value,
     };
@@ -98,6 +132,11 @@ export class GarageComponent implements OnInit {
     this.garageService.createCar(body);
   }
   onDeleteCar(id: number) {
+    this.animationPlayers.forEach((player, index) => {
+      if (id == player.id) {
+        this.animationPlayers.splice(index, 1);
+      }
+    });
     this.garageService.deleteCar(id);
   }
   updateCarData: car = {
@@ -124,45 +163,58 @@ export class GarageComponent implements OnInit {
 
   onStartCar(car: car | car[]) {
     if (Array.isArray(car)) {
-      car.forEach((singleCar) => {
-        this.garageService
-          .carAction<carSpecs>(singleCar, 'started')
-          .subscribe((startResult) => {
-            if (startResult.velocity) {
-              this.garageService
-                .carAction<isCarDrivable>(singleCar, 'drive')
-                .subscribe((driveResult) => {
-                  if (driveResult) {
-                    this.startAnimation(
-                      startResult.distance / (startResult.velocity * 1000),
-                      singleCar.id
-                    );
+      const observables = car.map((singleCar) => {
+        return this.garageService.carAction<carSpecs>(singleCar, 'started');
+      });
+
+      forkJoin(observables).subscribe((startResults) => {
+        startResults.forEach((startResult, index) => {
+          const singleCar = car[index];
+          if (startResult.velocity) {
+            this.startAnimation(
+              startResult.distance / (startResult.velocity * 1000),
+              singleCar.id
+            );
+
+            this.garageService
+              .carAction<isCarDrivable>(singleCar, 'drive')
+              .pipe(
+                catchError((error) => {
+                  if (error.status === 500) {
+                    this.stopAnimation(singleCar.id);
                   }
-                });
-            }
-          });
+                  return [];
+                })
+              )
+              .subscribe();
+          }
+        });
       });
     } else {
       this.garageService
         .carAction<carSpecs>(car, 'started')
         .subscribe((startResult) => {
           if (startResult.velocity) {
+            this.startAnimation(
+              startResult.distance / (startResult.velocity * 1000),
+              car.id
+            );
             this.garageService
               .carAction<isCarDrivable>(car, 'drive')
-              .subscribe((driveResult) => {
-                if (driveResult) {
-                  this.startAnimation(
-                    startResult.distance / (startResult.velocity * 1000),
-                    car.id
-                  );
-                }
-              });
+              .pipe(
+                catchError((error) => {
+                  if (error.status === 500) {
+                    this.stopAnimation(car.id);
+                  }
+                  return [];
+                })
+              )
+              .subscribe();
           }
         });
     }
   }
   onStopCar(animatedCars: car | animatedCarI[]) {
-    console.log(animatedCars);
     if (Array.isArray(animatedCars)) {
       animatedCars.forEach((singleCar: animatedCarI) => {
         this.garageService
@@ -182,5 +234,71 @@ export class GarageComponent implements OnInit {
           }
         });
     }
+  }
+  onGenerateCars() {
+    for (let i = 0; i < 100; i++) {
+      const color: string = this.garageService.getRandomColor();
+      const name: string = this.garageService.generateRandomCar();
+      const body: createCar = {
+        name: name,
+        color: color,
+      };
+      this.garageService.createCar(body);
+    }
+  }
+  currentPage: number = 1;
+  carsPerPage: number = 7;
+  // getPaginatedCars(): car[] {
+  //   const startIndex = (this.currentPage - 1) * this.carsPerPage;
+  //   const endIndex = startIndex + this.carsPerPage;
+  //   const carsOnPage = this.garageService.cars.slice(startIndex, endIndex);
+  //   if (this.animationPlayers.length > 0) {
+  //     this.animationPlayers.forEach((player) => {
+  //       carsOnPage.forEach((carOnPage) => {
+  //         if (carOnPage.id === player.id) {
+  //           const carEl = document.querySelector(
+  //             '.car-' + carOnPage.id
+  //           ) as HTMLElement;
+  //           carEl.style.transform = `translateX(${
+  //             window.innerWidth * (player.animationPosition || 0)
+  //           })`;
+  //         }
+  //       });
+  //     });
+  //   }
+  //   return carsOnPage;
+  // }
+  carsOnPage: car[] = [];
+  getPaginatedCars(): car[] {
+    const startIndex = (this.currentPage - 1) * this.carsPerPage;
+    const endIndex = startIndex + this.carsPerPage;
+    this.garageService.onPagechange();
+    this.carsOnPage = this.garageService.cars.slice(startIndex, endIndex);
+    return this.carsOnPage;
+  }
+
+  applyAnimationStyling() {
+    this.garageService.pageChange$.subscribe(() => {
+      if (this.animationPlayers.length > 0) {
+        this.animationPlayers.forEach((player) => {
+          this.carsOnPage.forEach((carOnPage) => {
+            if (carOnPage.id === player.id) {
+              const carEl = document.querySelector(
+                '.car-' + carOnPage.id
+              ) as HTMLElement;
+              if (carEl) {
+                carEl.style.transform = `translateX(${
+                  window.innerWidth * (player.animationPosition || 0) - 300
+                }px)`;
+              }
+            }
+          });
+        });
+      }
+    });
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.garageService.cars.length / this.carsPerPage);
   }
 }
