@@ -1,0 +1,23 @@
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url(./assets/fonts/Montserrat-Regular.ttf);
+}
+* {
+  font-family: "Montserrat-Regular", serif;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root {
+  --lime-green: #43ff2a;
+  --sky-blue: #5abbff;
+  --light-purple: #fa33ff;
+  --light-red: #ff0000;
+  --light-yellow: #fffb00;
+}
+body {
+  background-image: url(./assets/images/wall-bg.avif);
+}
+
+button {
+  cursor: pointer;
+}

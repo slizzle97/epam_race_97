@@ -47,6 +47,11 @@ export class GarageComponent implements OnInit {
       updateColorFC: [''],
     });
   }
+  getRange(count: number): number[] {
+    return Array(count)
+      .fill(0)
+      .map((x, i) => i);
+  }
 
   public animationPlayers: animatedCarI[] = [];
   animationState: { [carId: number]: string } = {};
@@ -96,19 +101,16 @@ export class GarageComponent implements OnInit {
       );
     });
   }
-  // reseting car to its inital position. Two cases: 1. reset car with its own reset button. 2. reset all cars that have been animated;
-  resetAnimation(carID?: number) {
+  // reseting car to its inital position. Two cases:
+  // 1. reset car with its own reset button.
+  // 2. reset all cars that have been animated;
+  resetAnimation(carID: number) {
     this.animationPlayers.forEach((player, index) => {
-      if (carID !== undefined) {
-        if (player.id == carID) {
-          player.player.reset();
-          this.animationPlayers.splice(index, 1);
-        }
-      } else if (this.animationPlayers.length != 0) {
-        this.animationPlayers.forEach((player, index) => {
-          player.player.reset();
-          this.animationPlayers.splice(index, 1);
-        });
+      if (player.id == carID) {
+        player.player.reset();
+        this.animationPlayers.splice(index, 1);
+        const el = document.querySelector('.car-' + player.id) as HTMLElement;
+        el.style.transform = 'translateX(0)';
       }
     });
   }
@@ -248,26 +250,6 @@ export class GarageComponent implements OnInit {
   }
   currentPage: number = 1;
   carsPerPage: number = 7;
-  // getPaginatedCars(): car[] {
-  //   const startIndex = (this.currentPage - 1) * this.carsPerPage;
-  //   const endIndex = startIndex + this.carsPerPage;
-  //   const carsOnPage = this.garageService.cars.slice(startIndex, endIndex);
-  //   if (this.animationPlayers.length > 0) {
-  //     this.animationPlayers.forEach((player) => {
-  //       carsOnPage.forEach((carOnPage) => {
-  //         if (carOnPage.id === player.id) {
-  //           const carEl = document.querySelector(
-  //             '.car-' + carOnPage.id
-  //           ) as HTMLElement;
-  //           carEl.style.transform = `translateX(${
-  //             window.innerWidth * (player.animationPosition || 0)
-  //           })`;
-  //         }
-  //       });
-  //     });
-  //   }
-  //   return carsOnPage;
-  // }
   carsOnPage: car[] = [];
   getPaginatedCars(): car[] {
     const startIndex = (this.currentPage - 1) * this.carsPerPage;
@@ -278,6 +260,7 @@ export class GarageComponent implements OnInit {
   }
 
   applyAnimationStyling() {
+    const screenWidth = window.innerWidth;
     this.garageService.pageChange$.subscribe(() => {
       if (this.animationPlayers.length > 0) {
         this.animationPlayers.forEach((player) => {
@@ -288,7 +271,9 @@ export class GarageComponent implements OnInit {
               ) as HTMLElement;
               if (carEl) {
                 carEl.style.transform = `translateX(${
-                  window.innerWidth * (player.animationPosition || 0) - 300
+                  player.animationPosition
+                    ? (screenWidth - 300) * player.animationPosition
+                    : screenWidth - 300
                 }px)`;
               }
             }

@@ -1,31 +1,105 @@
-<button [routerLink]="['/garage']">GARAGE</button>
-<button [routerLink]="['/winners']">WINNERS</button>
+<div class="header">
+  <div class="route-btns">
+    <button
+      class="default-btn btn-purple garage-btn"
+      [routerLink]="['/garage']"
+    >
+      GARAGE
+    </button>
+    <button
+      class="default-btn btn-blue winners-btn"
+      [routerLink]="['/winners']"
+    >
+      WINNERS
+    </button>
+  </div>
+  <div class="title">Async Race</div>
+</div>
 
-<form [formGroup]="garageFG">
-  <input type="text" formControlName="createNameFC" />
-  <input type="color" formControlName="createColorFC" />
-  <button (click)="onCreateCar()">create Car</button>
+<section class="race-controls">
+  <div class="race-btns">
+    <button
+      (click)="onStartCar(this.carsOnPage)"
+      class="default-btn start-btn btn-green"
+    >
+      start
+      <i class="bi bi-caret-right"></i>
+    </button>
+    <button
+      class="default-btn reset-btn btn-purple"
+      (click)="onStopCar(animationPlayers)"
+    >
+      reset<i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+  </div>
 
-  update car
-  <input type="text" formControlName="updateNameFC" />
-  <input type="color" formControlName="updateColorFC" />
-  <button (click)="onUpdateCars()">update Car</button>
-</form>
+  <form [formGroup]="garageFG" class="race-form">
+    <div class="input-container">
+      <input
+        type="text"
+        formControlName="createNameFC"
+        placeholder="TYPE CAR BRAND"
+        class="createFC"
+      />
+      <input type="color" formControlName="createColorFC" />
+      <button
+        (click)="onCreateCar()"
+        class="default-btn createCar-btn btn-purple"
+      >
+        create
+      </button>
+    </div>
+    <div class="input-container">
+      <input
+        type="text"
+        formControlName="updateNameFC"
+        placeholder="TYPE CAR COLOR"
+      />
+      <input type="color" formControlName="updateColorFC" />
+      <button
+        (click)="onUpdateCars()"
+        class="default-btn updateCar-btn btn-purple"
+      >
+        update
+      </button>
+    </div>
+  </form>
 
-<button (click)="onStartCar(getPaginatedCars())">start Race</button>
-<button (click)="onStopCar(animationPlayers)">reset Race</button>
+  <button
+    (click)="onGenerateCars()"
+    class="default-btn btn-green generateCars-btn"
+  >
+    generate
+  </button>
+</section>
 
-<button (click)="onGenerateCars()">generate</button>
-<section>
+<section class="race-track">
+  <div class="icon-border">
+    <ng-container *ngFor="let i of getRange(100)">
+      <i
+        class="bi bi-chevron-double-right fs-24"
+        [class.color4]="i % 10 < 5"
+        [class.color5]="i % 10 >= 5"
+      ></i>
+    </ng-container>
+  </div>
   <div class="car-card" *ngFor="let car of getPaginatedCars()">
     <div class="button-container">
-      <div>
-        <button (click)="selectCar(car)">select</button>
-        <button (click)="onDeleteCar(car.id)">remove</button>
+      <div class="sel-del-container">
+        <button class="default-btn btn-blue" (click)="selectCar(car)">
+          select
+        </button>
+        <button class="default-btn btn-red" (click)="onDeleteCar(car.id)">
+          remove
+        </button>
       </div>
-      <div>
-        <button (click)="onStartCar(car)">start</button>
-        <button (click)="onStopCar(car)">stop</button>
+      <div class="start-stop-container">
+        <button (click)="onStartCar(car)" class="default-btn btn-green">
+          start
+        </button>
+        <button (click)="onStopCar(car)" class="default-btn btn-yellow">
+          stop
+        </button>
       </div>
     </div>
     <div [class]="'car-data car-svg car-' + car.id">
@@ -101,21 +175,43 @@
         />
       </svg>
     </div>
-    <div class="car-data">{{ car.name }}</div>
+    <div class="lane start-lane">
+      <div *ngFor="let i of getRange(13)" class="lane-small"></div>
+    </div>
+    <div class="text start-text">START</div>
+    <div class="car-name car-data fs-24 color3">{{ car.name }}</div>
+    <div class="lane finish-lane">
+      <div *ngFor="let i of getRange(13)" class="lane-small"></div>
+    </div>
+    <div class="text finish-text">FINISH</div>
   </div>
-  <div class="pagination">
-    <button (click)="currentPage = currentPage > 1 ? currentPage - 1 : 1">
-      Previous
-    </button>
-    <span>Page {{ currentPage }} of {{ getTotalPages() }}</span>
-    <button
-      (click)="
-        currentPage =
-          currentPage < getTotalPages() ? currentPage + 1 : getTotalPages()
-      "
-    >
-      Next
-    </button>
+  <div class="icon-border" style="margin-top: 1rem">
+    <ng-container *ngFor="let i of getRange(100)">
+      <i
+        class="bi bi-chevron-double-right fs-24"
+        [class.color4]="i % 10 < 5"
+        [class.color5]="i % 10 >= 5"
+      ></i>
+    </ng-container>
+  </div>
+  <div class="race-footer">
+    <div class="amount color1 fs24">
+      garage({{ garageService.cars.length }})
+    </div>
+    <div class="pagination color2 fs24">
+      <button (click)="currentPage = currentPage > 1 ? currentPage - 1 : 1">
+        <i class="bi bi-caret-left"></i>
+      </button>
+      <span class="fs-24">Page #{{ currentPage }}</span>
+      <button
+        (click)="
+          currentPage =
+            currentPage < getTotalPages() ? currentPage + 1 : getTotalPages()
+        "
+      >
+        <i class="bi bi-caret-right"></i>
+      </button>
+    </div>
   </div>
 
   <!-- } -->
