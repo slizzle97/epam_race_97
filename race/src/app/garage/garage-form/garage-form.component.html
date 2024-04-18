@@ -1,0 +1,56 @@
+<section class="race-controls">
+  <div class="race-btns">
+    <button
+      (click)="onStartCar(this.garageActionService.carsOnPage)"
+      class="default-btn start-btn btn-green"
+    >
+      start
+      <i class="bi bi-caret-right"></i>
+    </button>
+    <button
+      class="default-btn reset-btn btn-purple"
+      (click)="onStopCar(this.garageActionService.animationPlayers)"
+    >
+      reset<i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+  </div>
+
+  <form [formGroup]="garageActionService.garageFG" class="race-form">
+    <div class="input-container">
+      <input
+        type="text"
+        formControlName="createNameFC"
+        placeholder="TYPE CAR BRAND"
+        class="createFC"
+      />
+      <input type="color" formControlName="createColorFC" />
+      <button
+        (click)="onCreateCar()"
+        class="default-btn createCar-btn btn-purple"
+      >
+        create
+      </button>
+    </div>
+    <div class="input-container">
+      <input
+        type="text"
+        formControlName="updateNameFC"
+        placeholder="TYPE CAR COLOR"
+      />
+      <input type="color" formControlName="updateColorFC" />
+      <button
+        (click)="onUpdateCars()"
+        class="default-btn updateCar-btn btn-purple"
+      >
+        update
+      </button>
+    </div>
+  </form>
+
+  <button
+    (click)="onGenerateCars()"
+    class="default-btn btn-green generateCars-btn"
+  >
+    generate
+  </button>
+</section>

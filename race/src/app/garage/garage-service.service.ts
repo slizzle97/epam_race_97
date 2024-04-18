@@ -1,29 +1,7 @@
-import { AnimationPlayer } from '@angular/animations';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-
-export interface car {
-  name: string;
-  color: string;
-  id: number;
-}
-export interface createCar {
-  name: string;
-  color: string;
-}
-export interface carSpecs {
-  velocity: number;
-  distance: number;
-}
-export interface isCarDrivable {
-  success: boolean;
-}
-export interface animatedCarI {
-  id: number;
-  player: AnimationPlayer;
-  animationPosition?: number;
-}
+import { animatedCarI, car, createCar } from '../../model/race.model';
 
 @Injectable({ providedIn: 'root' })
 export class GarageService {

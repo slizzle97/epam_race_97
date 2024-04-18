@@ -1,0 +1,115 @@
+/* race tracks */
+.car-card {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  margin-right: 40px;
+}
+.car-data {
+  margin: auto 0;
+}
+.car-name {
+  border: 2px solid white;
+  border-left: none;
+  border-right: none;
+  width: 90%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  text-shadow: 0 0 5px white;
+}
+.icon-border {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  max-width: 100%;
+  padding: 0.5rem;
+  border-top: 2px dotted var(--light-purple);
+  border-bottom: 2px dotted var(--light-purple);
+}
+.lane {
+  height: auto;
+  width: 23px;
+  padding: 5px 0;
+  border-top: none !important;
+  border-bottom: none !important;
+}
+.start-lane {
+  border: 2px solid var(--light-red);
+}
+.finish-lane {
+  border: 2px solid var(--lime-green);
+}
+.lane-small {
+  border: 1px solid white;
+  text-shadow: 0 0 2px white;
+  border-radius: 4px;
+  height: 3px;
+  width: 14px;
+  transform: rotate(20deg);
+  margin-top: 4px;
+}
+.start-text {
+  color: var(--light-red);
+}
+.text {
+  transform: rotate(90deg);
+  margin: auto -20px;
+  font-size: 14px;
+}
+.finish-text {
+  color: var(--lime-green);
+}
+
+.card-container {
+  position: relative;
+}
+.button-container {
+  display: flex;
+  gap: 1rem;
+}
+.button-container div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* footer / pagination */
+
+.race-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+.race-footer .amount {
+  text-transform: uppercase;
+  font-style: 20px;
+}
+.pagination button i {
+  font-size: 30px;
+  color: var(--light-purple);
+}
+.pagination button {
+  background: none;
+  border: none;
+}
+
+@media screen and (max-width: 1200px) {
+  button {
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 994px) {
+}
+@media screen and (max-width: 640px) {
+  button,
+  .car-name,
+  .text {
+    font-size: 11px;
+  }
+  .button-container {
+    gap: 0.3rem;
+  }
+}

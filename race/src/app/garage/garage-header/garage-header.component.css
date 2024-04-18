@@ -1,0 +1,47 @@
+.header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.route-btns {
+  display: flex;
+  margin: 1rem 10%;
+  gap: 2rem;
+  flex-direction: column;
+  width: 10%;
+}
+.title {
+  font-size: 30px;
+  color: var(--light-purple);
+  text-shadow: 0 0 2px var(--light-purple);
+  transform: rotate(-25deg);
+}
+.garage-btn,
+.winners-btn {
+  min-width: 90px;
+  border-width: 3px;
+  letter-spacing: 2px;
+}
+
+.garage-btn:hover {
+  background-color: var(--light-purple);
+  color: white;
+}
+
+.winners-btn:hover {
+  background-color: var(--sky-blue);
+  color: white;
+}
+
+@media screen and (max-width: 1200px) {
+  button {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  button {
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,114 @@
+section {
+  margin: 1rem;
+}
+
+.updateCar-btn,
+.createCar-btn {
+  height: 35px;
+}
+
+.generateCars-btn {
+  padding: 0.3rem 0.8rem;
+  font-weight: 600;
+}
+
+.start-btn:hover,
+.start-btn:hover i {
+  background-color: var(--lime-green);
+  color: black;
+  font-weight: 600;
+}
+.reset-btn:hover,
+.reset-btn:hover i {
+  background-color: var(--light-purple);
+  color: white;
+}
+
+.updateCar-btn:hover,
+.createCar-btn:hover {
+  background-color: var(--light-purple);
+  color: white;
+}
+.generateCars-btn:hover {
+  background-color: var(--lime-green);
+  color: black;
+  font-weight: 600;
+}
+
+.start-btn i {
+  color: var(--lime-green);
+  margin-left: 5px;
+}
+.reset-btn i {
+  color: var(--light-purple);
+  margin-left: 5px;
+}
+
+/* race inputs  and container  */
+.race-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.race-btns {
+  display: flex;
+  gap: 1rem;
+}
+
+input[type="color"] {
+  width: 30px;
+}
+input[type="text"] {
+  height: 35px;
+  border-radius: 8px;
+  background-color: white;
+  border: 2px solid #ccc;
+  padding-left: 15px;
+  outline: none;
+}
+::placeholder {
+  color: #ccc;
+  opacity: 1;
+}
+
+::-ms-input-placeholder {
+  color: #ccc;
+}
+
+.race-form,
+.input-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media screen and (max-width: 1200px) {
+  button {
+    font-size: 12px;
+  }
+  input[type="text"] {
+    width: min-content;
+  }
+}
+@media screen and (max-width: 994px) {
+  .race-form {
+    flex-direction: column;
+  }
+  .race-controls {
+    gap: 0.5rem;
+  }
+}
+@media screen and (max-width: 640px) {
+  .race-btns {
+    flex-direction: column;
+  }
+  input[type="text"] {
+    width: 50%;
+    font-size: 11px;
+  }
+  button {
+    font-size: 11px;
+  }
+}
