@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { animatedCarI, car, createCar } from '../../model/race.model';
-
+import { carMarks, carModels } from '../../json/car-marks';
 @Injectable({ providedIn: 'root' })
 export class GarageService {
   constructor(private http: HttpClient) {}
@@ -10,30 +10,8 @@ export class GarageService {
   cars: car[] = [];
 
   domainURL: string = 'http://127.0.0.1:3000';
-  brandParts: string[] = [
-    'Tesla',
-    'Ford',
-    'Chevrolet',
-    'Toyota',
-    'Honda',
-    'BMW',
-    'Mercedes-Benz',
-    'Audi',
-    'Volkswagen',
-    'Nissan',
-  ];
-  modelParts: string[] = [
-    'Model S',
-    'Mustang',
-    'Camaro',
-    'Corolla',
-    'Accord',
-    'X5',
-    'E-Class',
-    'A7',
-    'Golf',
-    'Altima',
-  ];
+  carMarks: string[] = carMarks;
+  carModels: { [brand: string]: string[] } = carModels;
 
   private pageChangeSub = new BehaviorSubject<boolean>(false);
   public pageChange$ = this.pageChangeSub.asObservable();
@@ -50,18 +28,22 @@ export class GarageService {
     return array[Math.floor(Math.random() * array.length)];
   }
   generateRandomCar() {
-    const brandPart = this.generateRandomEl(this.brandParts);
-    const modelPart = this.generateRandomEl(this.modelParts);
+    const brandPart = this.generateRandomEl(carMarks);
+    const modelsForBrand = this.carModels[brandPart];
+    const modelPart = this.generateRandomEl(modelsForBrand);
     return `${brandPart} ${modelPart}`;
   }
-  onPagechange() {
+
+  detectPageChange() {
     this.pageChangeSub.next(!this.pageChangeSub.value);
   }
 
   getCars() {
     this.http
       .get<car[]>(`${this.domainURL}/garage`)
-      .subscribe((res) => (this.cars = res));
+      .subscribe(
+        (res) => (this.cars = res.map((car) => ({ ...car, disabled: true })))
+      );
   }
   createCar(body: createCar) {
     const headers: HttpHeaders = new HttpHeaders({

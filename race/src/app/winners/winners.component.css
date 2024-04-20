@@ -1,0 +1,32 @@
+section {
+  margin: 1rem;
+  padding: 5%;
+}
+table {
+  width: 100%;
+}
+
+th {
+  width: 20%;
+}
+td {
+  font-size: 20px;
+  color: white;
+  width: 20%;
+}
+thead tr {
+  border: 2px solid var(--light-purple);
+  border-radius: 8px;
+}
+tr {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+}
+
+@media screen and (max-width: 550px) {
+  th {
+    font-size: 14px;
+  }
+}

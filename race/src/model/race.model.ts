@@ -4,6 +4,7 @@ export interface car {
   name: string;
   color: string;
   id: number;
+  disabled?: boolean;
 }
 export interface createCar {
   name: string;

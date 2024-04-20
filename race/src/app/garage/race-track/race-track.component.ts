@@ -27,8 +27,10 @@ export class RaceTrackComponent implements OnInit {
   }
 
   onGetPaginatedCars(): car[] {
-    return this.garageActionService.getPaginatedCars();
+    const carsOnCurrentPage = this.garageActionService.getPaginatedCars();
+    return carsOnCurrentPage;
   }
+
   onSelectCar(car: car) {
     this.garageActionService.selectCar(car);
   }

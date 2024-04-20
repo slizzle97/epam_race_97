@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GarageService } from './garage-service.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { forkJoin, catchError } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import {
   AnimationBuilder,
   AnimationFactory,
@@ -14,6 +14,7 @@ import {
   carSpecs,
   isCarDrivable,
 } from '../../model/race.model';
+import { WinnersService } from '../winners/winners-service.service';
 
 @Injectable({ providedIn: 'root' })
 export class GarageActionService {
@@ -21,7 +22,8 @@ export class GarageActionService {
   constructor(
     private garageService: GarageService,
     private animationBuilder: AnimationBuilder,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private winnersService: WinnersService
   ) {
     this.garageFG = fb.group({
       createNameFC: [''],
@@ -40,7 +42,15 @@ export class GarageActionService {
   };
   carsOnPage: car[] = [];
 
+  minAnimationTime = Number.MAX_VALUE;
+  minAnimationTimeCar: car = {
+    name: '',
+    color: '',
+    id: -1,
+  };
+
   animationState: { [carId: number]: string } = {};
+
   startAnimation(duration: number, carID?: number) {
     const screenWidth = window.innerWidth;
     const savedPosition = this.animationPlayers.find(
@@ -117,59 +127,73 @@ export class GarageActionService {
     }
   }
 
+  startStatusCar$(car: car[]) {
+    const observables = car.map((singleCar) => {
+      return this.garageService.carAction<carSpecs>(singleCar, 'started');
+    });
+    return observables;
+  }
+  calcAnimTime(startResult: carSpecs) {
+    return startResult.distance / (startResult.velocity * 1000);
+  }
+
   startCar(car: car | car[]) {
     if (Array.isArray(car)) {
-      const observables = car.map((singleCar) => {
-        return this.garageService.carAction<carSpecs>(singleCar, 'started');
-      });
-
-      forkJoin(observables).subscribe((startResults) => {
-        startResults.forEach((startResult, index) => {
-          const singleCar = car[index];
-          if (startResult.velocity) {
-            this.startAnimation(
-              startResult.distance / (startResult.velocity * 1000),
-              singleCar.id
-            );
-
-            this.garageService
-              .carAction<isCarDrivable>(singleCar, 'drive')
-              .pipe(
-                catchError((error) => {
-                  if (error.status === 500) {
-                    this.stopAnimation(singleCar.id);
-                  }
-                  return [];
-                })
-              )
-              .subscribe();
-          }
-        });
-      });
+      this.startMultipleCars(car);
     } else {
-      this.garageService
-        .carAction<carSpecs>(car, 'started')
-        .subscribe((startResult) => {
-          if (startResult.velocity) {
-            this.startAnimation(
-              startResult.distance / (startResult.velocity * 1000),
-              car.id
-            );
-            this.garageService
-              .carAction<isCarDrivable>(car, 'drive')
-              .pipe(
-                catchError((error) => {
-                  if (error.status === 500) {
-                    this.stopAnimation(car.id);
-                  }
-                  return [];
-                })
-              )
-              .subscribe();
-          }
-        });
+      this.startSingleCar(car);
     }
   }
+
+  private startMultipleCars(cars: car[]) {
+    const observables = this.startStatusCar$(cars);
+    forkJoin(observables).subscribe((startResults) => {
+      startResults.forEach((startResult, index) => {
+        const singleCar = cars[index];
+        if (startResult.velocity) {
+          this.handleCarStartAnimation(singleCar, startResult);
+        }
+      });
+    });
+  }
+
+  private startSingleCar(car: car) {
+    this.garageService
+      .carAction<carSpecs>(car, 'started')
+      .subscribe((startResult) => {
+        if (startResult.velocity) {
+          this.handleCarStartAnimation(car, startResult);
+        }
+      });
+  }
+
+  private handleCarStartAnimation(car: car, startResult: carSpecs) {
+    const animationTime = this.calcAnimTime(startResult);
+
+    this.startAnimation(animationTime, car.id);
+
+    this.garageService.carAction<isCarDrivable>(car, 'drive').subscribe(
+      () => {
+        if (animationTime < this.minAnimationTime) {
+          this.minAnimationTime = animationTime;
+          this.minAnimationTimeCar = car;
+          if (this.minAnimationTimeCar.id != -1) {
+            console.log(this.minAnimationTimeCar);
+            this.winnersService.getWinner(
+              this.minAnimationTimeCar.id,
+              this.minAnimationTime
+            );
+          }
+        }
+      },
+      (error) => {
+        if (error.status === 500) {
+          this.stopAnimation(car.id);
+        }
+      }
+    );
+  }
+
   stopCar(animatedCars: car | animatedCarI[]) {
     if (Array.isArray(animatedCars)) {
       animatedCars.forEach((singleCar: animatedCarI) => {
@@ -193,10 +217,11 @@ export class GarageActionService {
   }
   currentPage: number = 1;
   carsPerPage: number = 7;
+
   getPaginatedCars(): car[] {
     const startIndex = (this.currentPage - 1) * this.carsPerPage;
     const endIndex = startIndex + this.carsPerPage;
-    this.garageService.onPagechange();
+    this.garageService.detectPageChange();
     this.carsOnPage = this.garageService.cars.slice(startIndex, endIndex);
     return this.carsOnPage;
   }

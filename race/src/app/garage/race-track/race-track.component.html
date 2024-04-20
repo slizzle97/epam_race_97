@@ -19,10 +19,20 @@
         </button>
       </div>
       <div class="start-stop-container">
-        <button (click)="onStartCar(car)" class="default-btn btn-green">
+        <button
+          (click)="onStartCar(car)"
+          [id]="'start-' + car.id"
+          class="default-btn btn-green"
+        >
           start
         </button>
-        <button (click)="onStopCar(car)" class="default-btn btn-yellow">
+        <button
+          (click)="onStopCar(car)"
+          [id]="'stop-' + car.id"
+          class="default-btn"
+          [ngClass]="car.disabled ? 'disabled-btn' : 'btn-yellow'"
+        >
+          <!-- [disabled]="car.disabled" -->
           stop
         </button>
       </div>
