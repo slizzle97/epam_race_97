@@ -36,21 +36,20 @@ export class WinnersService {
     });
     this.http
       .post<Winners>(`${this.domainURL}/winners`, body, { headers })
-      .subscribe((res) => res);
+      .subscribe();
   }
   getWinner(carID: number, time: number) {
-    console.log(carID, time);
     this.http
-      .get<Winners>(`${this.domainURL}/winners/?id=${carID}`)
+      .get<Winners[]>(`${this.domainURL}/winners/?id=${carID}`)
 
       .subscribe((res) => {
-        if (Array.isArray(res)) {
+        if (res.length === 0) {
           const firstTimeWinner: Winners = { id: carID, wins: 1, time: time };
           this.createWinner(firstTimeWinner);
         } else {
           this.updateWinner(carID, {
-            wins: res.wins + 1,
-            time: time > res.time ? time : res.time,
+            wins: res[0].wins + 1,
+            time: time < res[0].time ? time : res[0].time,
           });
         }
       });
@@ -66,6 +65,21 @@ export class WinnersService {
     const headers: HttpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',
     });
-    this.http.put(`${this.domainURL}/winners/?${carID}`, body, { headers });
+    this.http
+      .put(`${this.domainURL}/winners/${carID}`, body, { headers })
+      .subscribe();
+  }
+
+  currentPage: number = 1;
+  winnersPerPage: number = 10;
+  winnersOnPage: winnerCarData[] = [];
+  getPaginatedWinners(): winnerCarData[] {
+    const startIndex = (this.currentPage - 1) * this.winnersPerPage;
+    const endIndex = startIndex + this.winnersPerPage;
+    this.winnersOnPage = this.winnersFullData.slice(startIndex, endIndex);
+    return this.winnersOnPage;
+  }
+  getTotalPages(): number {
+    return Math.ceil(this.winnersFullData.length / this.winnersPerPage);
   }
 }

@@ -1,18 +1,22 @@
 section {
   margin: 1rem;
-  padding: 5%;
 }
 table {
   width: 100%;
+  border-bottom: 3px solid var(--light-purple);
+  margin-bottom: 2rem;
 }
 
 th {
   width: 20%;
+  text-align: start;
 }
 td {
   font-size: 20px;
   color: white;
   width: 20%;
+  text-shadow: 0 0 4px white;
+  word-wrap: break-word;
 }
 thead tr {
   border: 2px solid var(--light-purple);
@@ -23,6 +27,15 @@ tr {
   align-items: center;
   width: 100%;
   padding: 1rem;
+}
+/* paging */
+.pagination button i {
+  font-size: 30px;
+  color: var(--light-purple);
+}
+.pagination button {
+  background: none;
+  border: none;
 }
 
 @media screen and (max-width: 550px) {

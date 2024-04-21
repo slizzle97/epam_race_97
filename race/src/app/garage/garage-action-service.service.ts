@@ -177,13 +177,10 @@ export class GarageActionService {
         if (animationTime < this.minAnimationTime) {
           this.minAnimationTime = animationTime;
           this.minAnimationTimeCar = car;
-          if (this.minAnimationTimeCar.id != -1) {
-            console.log(this.minAnimationTimeCar);
-            this.winnersService.getWinner(
-              this.minAnimationTimeCar.id,
-              this.minAnimationTime
-            );
-          }
+          this.winnersService.getWinner(
+            this.minAnimationTimeCar.id,
+            this.minAnimationTime
+          );
         }
       },
       (error) => {
@@ -205,6 +202,8 @@ export class GarageActionService {
             }
           });
       });
+      this.minAnimationTime = Number.MAX_VALUE;
+      this.minAnimationTimeCar.id = -1;
     } else {
       this.garageService
         .carAction<carSpecs>(animatedCars, 'stopped')
