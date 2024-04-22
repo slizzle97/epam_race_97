@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { WinnersService } from '../winners/winners-service.service';
 import { GarageService } from '../garage/garage-service.service';
+import { GarageActionService } from '../garage/garage-action-service.service';
 
 @Component({
   selector: 'app-pagination',
@@ -12,7 +13,8 @@ import { GarageService } from '../garage/garage-service.service';
 export class PaginationComponent {
   constructor(
     public winnersService: WinnersService,
-    public garageService: GarageService
+    public garageService: GarageService,
+    private garageActionService: GarageActionService
   ) {}
 
   @Input() paginationLocation: string = '';
@@ -24,6 +26,8 @@ export class PaginationComponent {
         if (this.garageService.currentPage < this.garageService.totalPages) {
           this.garageService.currentPage++;
           this.garageService.getCars();
+          this.garageActionService.minAnimationTime = Number.MAX_VALUE;
+          this.garageActionService.minAnimationTimeCar.id = -1;
         }
       } else {
         if (this.garageService.currentPage > 1) {
