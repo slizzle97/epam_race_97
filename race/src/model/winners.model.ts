@@ -11,8 +11,8 @@ export interface winnerCarData extends car {
   time: number;
 }
 export interface SortModes {
-  wins: boolean;
-  time: boolean;
-  id: boolean;
-  [key: string]: boolean;
+  wins: boolean | null;
+  time: boolean | null;
+  id: boolean | null;
+  [key: string]: boolean | null;
 }

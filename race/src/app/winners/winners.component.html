@@ -7,23 +7,75 @@
     <table>
       <thead>
         <tr>
-          <th style="color: white" (click)="sortWinners('id')">#</th>
+          <th
+            style="color: white"
+            (click)="winnersService.sortWinners('id')"
+            [title]="
+              sortMode.id === null
+                ? 'Sort'
+                : sortMode.id
+                ? 'Ascending'
+                : 'Descending'
+            "
+          >
+            #<i
+              [class]="
+                sortMode.id === null
+                  ? 'bi bi-funnel'
+                  : sortMode.id
+                  ? 'bi bi-sort-up-alt'
+                  : 'bi bi-sort-down'
+              "
+            ></i>
+          </th>
 
           <th style="color: white">CAR</th>
           <th style="color: white">NAME</th>
           <th
             class="color1"
             style="cursor: pointer"
-            (click)="sortWinners('wins')"
+            (click)="winnersService.sortWinners('wins')"
+            [title]="
+              sortMode.wins === null
+                ? 'Sort'
+                : sortMode.id
+                ? 'Ascending'
+                : 'Descending'
+            "
           >
-            WINS <i class="bi bi-sort-down"></i>
+            WINS
+            <i
+              [class]="
+                sortMode.wins === null
+                  ? 'bi bi-funnel'
+                  : sortMode.id
+                  ? 'bi bi-sort-up-alt'
+                  : 'bi bi-sort-down'
+              "
+            ></i>
           </th>
           <th
             class="color4"
             style="cursor: pointer"
-            (click)="sortWinners('time')"
+            (click)="winnersService.sortWinners('time')"
+            [title]="
+              sortMode.time === null
+                ? 'Sort'
+                : sortMode.id
+                ? 'Ascending'
+                : 'Descending'
+            "
           >
-            BEST TIME (SECONDS) <i class="bi bi-sort-down"></i>
+            BEST TIME (SECONDS)
+            <i
+              [class]="
+                sortMode.time === null
+                  ? 'bi bi-funnel'
+                  : sortMode.id
+                  ? 'bi bi-sort-up-alt'
+                  : 'bi bi-sort-down'
+              "
+            ></i>
           </th>
         </tr>
       </thead>

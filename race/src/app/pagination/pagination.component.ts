@@ -39,12 +39,12 @@ export class PaginationComponent {
       if (actionMode === 'increment') {
         if (this.winnersService.currentPage < this.winnersService.totalPages) {
           this.winnersService.currentPage++;
-          this.winnersService.getWinners();
+          this.winnersService.sortWinners();
         }
       } else {
         if (this.winnersService.currentPage > 1) {
           this.winnersService.currentPage--;
-          this.winnersService.getWinners();
+          this.winnersService.sortWinners();
         }
       }
     }

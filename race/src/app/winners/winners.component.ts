@@ -6,7 +6,6 @@ import { CommonModule, NgFor } from '@angular/common';
 import { GarageService } from '../garage/garage-service.service';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { SortModes } from '../../model/winners.model';
-import { take } from 'rxjs';
 
 @Component({
   selector: 'app-winners',
@@ -26,20 +25,13 @@ export class WinnersComponent implements OnInit {
     public winnersService: WinnersService,
     private garageService: GarageService
   ) {}
+  sortMode: SortModes = { wins: false, time: false, id: false };
+
   ngOnInit(): void {
     this.garageService.getCars(true);
     this.winnersService.getWinners();
-  }
-
-  sortWinners(sortName: keyof SortModes) {
-    this.winnersService.changeSortMode(sortName);
-    this.winnersService.sortMode$
-      .pipe(take(1))
-      .subscribe((sortMode: SortModes) => {
-        this.winnersService.getWinners(
-          sortName,
-          sortMode[sortName] ? 'ASC' : 'DESC'
-        );
-      });
+    this.winnersService.sortMode$.subscribe((mode) => {
+      this.sortMode = mode;
+    });
   }
 }
