@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { GarageService } from '../garage-service.service';
 import { GarageActionService } from '../garage-action-service.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { car, animatedCarI } from '../../../model/race.model';
 import { PaginationComponent } from '../../pagination/pagination.component';
+import { WinnerModalComponent } from '../winner-modal/winner-modal.component';
 
 @Component({
   selector: 'app-race-track',
   standalone: true,
-  imports: [CommonModule, PaginationComponent],
+  imports: [CommonModule, PaginationComponent, WinnerModalComponent, NgIf],
   templateUrl: './race-track.component.html',
   styleUrl: './race-track.component.css',
 })

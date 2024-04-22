@@ -158,3 +158,9 @@
     <app-pagination [paginationLocation]="'garagePage'"></app-pagination>
   </div>
 </section>
+
+<div class="modal" *ngIf="garageActionService.minAnimationTimeCar.id !== -1">
+  <div>
+    <app-winner-modal></app-winner-modal>
+  </div>
+</div>

@@ -2,6 +2,10 @@
   font-family: "Montserrat-Regular";
   src: url(./assets/fonts/Montserrat-Regular.ttf);
 }
+@font-face {
+  font-family: "CodyStar";
+  src: url(./assets/fonts/Codystar-Regular.ttf);
+}
 * {
   font-family: "Montserrat-Regular", serif;
   padding: 0;

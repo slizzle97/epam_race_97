@@ -17,6 +17,8 @@ td {
   width: 20%;
   text-shadow: 0 0 4px white;
   word-wrap: break-word;
+  font-family: "CodyStar", sans-serif;
+  font-weight: bold;
 }
 thead tr {
   border: 2px solid var(--light-purple);

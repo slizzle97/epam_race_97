@@ -174,7 +174,7 @@ export class GarageActionService {
     this.garageService.carAction<isCarDrivable>(car, 'drive').subscribe(
       () => {
         if (animationTime < this.minAnimationTime) {
-          this.minAnimationTime = animationTime;
+          this.minAnimationTime = Number(animationTime.toFixed(3));
           this.minAnimationTimeCar = car;
           this.winnersService.getWinner(
             this.minAnimationTimeCar.id,

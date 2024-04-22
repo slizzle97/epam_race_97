@@ -19,6 +19,8 @@
   align-items: center;
   text-shadow: 0 0 5px white;
   word-wrap: break-word;
+  font-family: "CodyStar", sans-serif;
+  font-weight: bolder;
 }
 .icon-border {
   display: flex;
@@ -103,6 +105,22 @@
 .pagination button {
   background: none;
   border: none;
+}
+
+/* modal  */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  padding: 1rem;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%23FA33FFFF' stroke-width='5' stroke-dasharray='140%2c 10' stroke-dashoffset='100' stroke-linecap='butt'/%3e%3c/svg%3e");
+  border-radius: 10px;
+}
+.modal div {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%235ABBFFFF' stroke-width='5' stroke-dasharray='140%2c 10' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e");
+  border-radius: 10px;
 }
 
 @media screen and (max-width: 1200px) {

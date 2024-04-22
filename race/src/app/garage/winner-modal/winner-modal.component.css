@@ -1,0 +1,28 @@
+.modal-data {
+  font-size: 24px;
+  text-transform: uppercase;
+  color: var(--light-yellow);
+  text-align: center;
+  letter-spacing: 8px;
+  padding: 3rem;
+}
+.modal-data span {
+  display: block;
+  color: var(--lime-green);
+  text-shadow: 0 0 3px var(--lime-green);
+}
+.modal-data button {
+  background: transparent;
+  color: red;
+  font-size: 24px;
+  border: none;
+  position: absolute;
+  top: 24px;
+  right: 30px;
+  text-shadow: 0 0 8px red;
+}
+@media screen and (max-width: 768px) {
+  .modal-data {
+    font-size: 20px;
+  }
+}
