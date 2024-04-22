@@ -40,7 +40,6 @@ export class GarageActionService {
     color: '',
     id: -1,
   };
-  carsOnPage: car[] = [];
 
   minAnimationTime = Number.MAX_VALUE;
   minAnimationTimeCar: car = {
@@ -193,38 +192,30 @@ export class GarageActionService {
 
   stopCar(animatedCars: car | animatedCarI[]) {
     if (Array.isArray(animatedCars)) {
+      const pageCarIds = this.garageService.cars.map((car) => car.id);
       animatedCars.forEach((singleCar: animatedCarI) => {
-        this.garageService
-          .carAction<carSpecs>(singleCar, 'stopped')
-          .subscribe((stopResult) => {
-            if (stopResult.velocity == 0) {
-              this.resetAnimation(singleCar.id);
-            }
-          });
+        if (pageCarIds.includes(singleCar.id)) {
+          this.garageService
+            .carAction<carSpecs>(singleCar, 'stopped')
+            .subscribe((stopResult) => {
+              if (stopResult.velocity == 0) {
+                this.resetAnimation(singleCar.id);
+              }
+            });
+        }
       });
       this.minAnimationTime = Number.MAX_VALUE;
       this.minAnimationTimeCar.id = -1;
     } else {
-      this.garageService
-        .carAction<carSpecs>(animatedCars, 'stopped')
-        .subscribe((stopResult) => {
-          if (stopResult.velocity == 0) {
-            this.resetAnimation(animatedCars.id);
-          }
-        });
+      if (this.garageService.cars.some((car) => car.id === animatedCars.id)) {
+        this.garageService
+          .carAction<carSpecs>(animatedCars, 'stopped')
+          .subscribe((stopResult) => {
+            if (stopResult.velocity == 0) {
+              this.resetAnimation(animatedCars.id);
+            }
+          });
+      }
     }
-  }
-  currentPage: number = 1;
-  carsPerPage: number = 7;
-
-  getPaginatedCars(): car[] {
-    const startIndex = (this.currentPage - 1) * this.carsPerPage;
-    const endIndex = startIndex + this.carsPerPage;
-    this.garageService.detectPageChange();
-    this.carsOnPage = this.garageService.cars.slice(startIndex, endIndex);
-    return this.carsOnPage;
-  }
-  getTotalPages(): number {
-    return Math.ceil(this.garageService.cars.length / this.carsPerPage);
   }
 }

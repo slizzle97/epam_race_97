@@ -28,15 +28,6 @@ tr {
   width: 100%;
   padding: 1rem;
 }
-/* paging */
-.pagination button i {
-  font-size: 30px;
-  color: var(--light-purple);
-}
-.pagination button {
-  background: none;
-  border: none;
-}
 
 @media screen and (max-width: 550px) {
   th {

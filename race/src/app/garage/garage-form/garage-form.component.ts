@@ -17,6 +17,7 @@ export class GarageFormComponent implements OnInit {
     public garageService: GarageService,
     public garageActionService: GarageActionService
   ) {}
+
   ngOnInit(): void {
     this.applyAnimationStyling();
   }
@@ -47,26 +48,31 @@ export class GarageFormComponent implements OnInit {
   applyAnimationStyling() {
     const screenWidth = window.innerWidth;
     this.garageService.pageChange$.subscribe(() => {
-      if (this.garageActionService.animationPlayers.length > 0) {
-        this.garageActionService.animationPlayers.forEach((player) => {
-          this.garageActionService.carsOnPage.forEach((carOnPage) => {
-            if (carOnPage.id === player.id) {
-              const carEl = document.querySelector(
-                '.car-' + carOnPage.id
-              ) as HTMLElement;
-              if (carEl) {
-                carEl.style.transform = `translateX(${
-                  player.animationPosition
-                    ? (screenWidth - 300) * player.animationPosition
-                    : screenWidth - 300
-                }px)`;
-              }
-            }
-          });
-        });
-      }
+      this.updateAnimationStyling(screenWidth);
     });
   }
+
+  updateAnimationStyling(screenWidth: number) {
+    if (this.garageActionService.animationPlayers.length > 0) {
+      this.garageActionService.animationPlayers.forEach((player) => {
+        this.garageService.cars.forEach((carOnPage) => {
+          if (carOnPage.id === player.id) {
+            const carEl = document.querySelector(
+              '.car-' + carOnPage.id
+            ) as HTMLElement;
+            if (carEl) {
+              carEl.style.transform = `translateX(${
+                player.animationPosition
+                  ? (screenWidth - 300) * player.animationPosition
+                  : screenWidth - 300
+              }px)`;
+            }
+          }
+        });
+      });
+    }
+  }
+
   onGenerateCars() {
     for (let i = 0; i < 100; i++) {
       const color: string = this.garageService.getRandomColor();

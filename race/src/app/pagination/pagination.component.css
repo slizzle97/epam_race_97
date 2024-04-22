@@ -1,0 +1,9 @@
+/* paging */
+.pagination button i {
+  font-size: 30px;
+  color: var(--light-purple);
+}
+.pagination button {
+  background: none;
+  border: none;
+}

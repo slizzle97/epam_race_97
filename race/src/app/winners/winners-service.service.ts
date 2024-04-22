@@ -1,27 +1,52 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Winners, winnerCarData } from '../../model/winners.model';
+import { SortModes, Winners, winnerCarData } from '../../model/winners.model';
 import { GarageService } from '../garage/garage-service.service';
-
+import { BehaviorSubject, take } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class WinnersService {
   constructor(private http: HttpClient, private garageService: GarageService) {}
 
   domainURL: string = 'http://127.0.0.1:3000';
 
-  winners: Winners[] = [];
   winnersFullData: winnerCarData[] = [];
-  getWinners(page?: number, limit?: number, sort?: string, order?: string) {
+
+  currentPage: number = 1;
+  winnersPerPage: number = 10;
+  totalWinners: number = 0;
+  totalPages: number = 0;
+  winnersOnPage: winnerCarData[] = [];
+
+  private sortModeSub = new BehaviorSubject<SortModes>({
+    wins: false,
+    time: false,
+    id: false,
+  });
+  public sortMode$ = this.sortModeSub.asObservable();
+
+  changeSortMode(sortName: keyof SortModes) {
+    this.sortModeSub.pipe(take(1)).subscribe((currentSortMode) => {
+      const newSortMode: SortModes = { ...currentSortMode };
+      newSortMode[sortName] = !newSortMode[sortName];
+      this.sortModeSub.next(newSortMode);
+    });
+  }
+
+  getWinners(sort?: keyof SortModes, order?: string) {
     this.http
       .get<Winners[]>(
-        `${this.domainURL}/winners/?${page ? '_page=' + page : ''}${
-          limit ? '&_limit=' + limit : ''
-        }${sort ? '&_sort=' + sort : ''}${order ? '&_order=' + order : ''}`
+        `${this.domainURL}/winners/?_page=${this.currentPage}&_limit=${
+          this.winnersPerPage
+        }
+      ${sort ? '&_sort=' + sort : ''}${order ? '&_order=' + order : ''}`,
+        { observe: 'response' }
       )
       .subscribe((res) => {
+        this.totalWinners = Number(res.headers.get('X-Total-Count'));
+        this.totalPages = Math.ceil(this.totalWinners / this.winnersPerPage);
         this.winnersFullData = this.garageService.cars
           .map((car) => {
-            const winnerData = res.find((winner) => winner.id === car.id);
+            const winnerData = res.body?.find((winner) => winner.id === car.id);
             return winnerData
               ? { ...car, time: winnerData.time, wins: winnerData.wins }
               : undefined;
@@ -68,18 +93,5 @@ export class WinnersService {
     this.http
       .put(`${this.domainURL}/winners/${carID}`, body, { headers })
       .subscribe();
-  }
-
-  currentPage: number = 1;
-  winnersPerPage: number = 10;
-  winnersOnPage: winnerCarData[] = [];
-  getPaginatedWinners(): winnerCarData[] {
-    const startIndex = (this.currentPage - 1) * this.winnersPerPage;
-    const endIndex = startIndex + this.winnersPerPage;
-    this.winnersOnPage = this.winnersFullData.slice(startIndex, endIndex);
-    return this.winnersOnPage;
-  }
-  getTotalPages(): number {
-    return Math.ceil(this.winnersFullData.length / this.winnersPerPage);
   }
 }

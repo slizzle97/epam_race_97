@@ -8,7 +8,10 @@ export class GarageService {
   constructor(private http: HttpClient) {}
 
   cars: car[] = [];
-
+  currentPage: number = 1;
+  carsPerPage: number = 7;
+  totalCars: number = 0;
+  totalPages: number = 0;
   domainURL: string = 'http://127.0.0.1:3000';
   carMarks: string[] = carMarks;
   carModels: { [brand: string]: string[] } = carModels;
@@ -37,14 +40,22 @@ export class GarageService {
   detectPageChange() {
     this.pageChangeSub.next(!this.pageChangeSub.value);
   }
-
-  getCars() {
-    this.http
-      .get<car[]>(`${this.domainURL}/garage`)
-      .subscribe(
-        (res) => (this.cars = res.map((car) => ({ ...car, disabled: true })))
-      );
+  getCars(fromWinner?: boolean) {
+    const url = fromWinner
+      ? `${this.domainURL}/garage/`
+      : `${this.domainURL}/garage/?_page=${this.currentPage}&_limit=${this.carsPerPage}`;
+    this.http.get<car[]>(url, { observe: 'response' }).subscribe((res) => {
+      this.totalCars = Number(res.headers.get('X-Total-Count'));
+      this.totalPages = Math.ceil(this.totalCars / this.carsPerPage);
+      if (res.body) {
+        this.cars = res.body.map((car) => ({ ...car, disabled: true }));
+        setTimeout(() => {
+          this.detectPageChange();
+        }, 0);
+      }
+    });
   }
+
   createCar(body: createCar) {
     const headers: HttpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',

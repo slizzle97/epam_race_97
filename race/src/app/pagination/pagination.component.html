@@ -1,0 +1,15 @@
+<div class="pagination color2 fs24">
+  <button (click)="pageChange('decrement')">
+    <i class="bi bi-caret-left"></i>
+  </button>
+  <span class="fs-24"
+    >Page #{{
+      paginationLocation === "garagePage"
+        ? garageService.currentPage
+        : winnersService.currentPage
+    }}</span
+  >
+  <button (click)="pageChange('increment')">
+    <i class="bi bi-caret-right"></i>
+  </button>
+</div>

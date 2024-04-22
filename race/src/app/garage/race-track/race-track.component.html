@@ -130,10 +130,8 @@
     </ng-container>
   </div>
   <div class="race-footer">
-    <div class="amount color1 fs24">
-      garage({{ garageService.cars.length }})
-    </div>
-    <div class="pagination color2 fs24">
+    <div class="amount color1 fs24">garage({{ garageService.totalCars }})</div>
+    <!-- <div class="pagination color2 fs24">
       <button
         (click)="
           garageActionService.currentPage =
@@ -156,6 +154,7 @@
       >
         <i class="bi bi-caret-right"></i>
       </button>
-    </div>
+    </div> -->
+    <app-pagination [paginationLocation]="'garagePage'"></app-pagination>
   </div>
 </section>

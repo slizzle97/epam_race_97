@@ -10,3 +10,9 @@ export interface winnerCarData extends car {
   wins: number;
   time: number;
 }
+export interface SortModes {
+  wins: boolean;
+  time: boolean;
+  id: boolean;
+  [key: string]: boolean;
+}

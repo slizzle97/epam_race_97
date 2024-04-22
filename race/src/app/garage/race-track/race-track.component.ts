@@ -3,11 +3,12 @@ import { GarageService } from '../garage-service.service';
 import { GarageActionService } from '../garage-action-service.service';
 import { CommonModule } from '@angular/common';
 import { car, animatedCarI } from '../../../model/race.model';
+import { PaginationComponent } from '../../pagination/pagination.component';
 
 @Component({
   selector: 'app-race-track',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PaginationComponent],
   templateUrl: './race-track.component.html',
   styleUrl: './race-track.component.css',
 })
@@ -27,7 +28,7 @@ export class RaceTrackComponent implements OnInit {
   }
 
   onGetPaginatedCars(): car[] {
-    const carsOnCurrentPage = this.garageActionService.getPaginatedCars();
+    const carsOnCurrentPage = this.garageService.cars;
     return carsOnCurrentPage;
   }
 
