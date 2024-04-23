@@ -70,7 +70,6 @@ export class GarageService {
   deleteCar(id: number) {
     this.http.delete(`${this.domainURL}/garage/${id}`).subscribe(() => {
       this.getCars();
-      this.deleteWinner(id);
     });
   }
   deleteWinner(id: number) {

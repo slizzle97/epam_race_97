@@ -5,6 +5,7 @@ import { CommonModule, NgIf } from '@angular/common';
 import { car, animatedCarI } from '../../../model/race.model';
 import { PaginationComponent } from '../../pagination/pagination.component';
 import { WinnerModalComponent } from '../winner-modal/winner-modal.component';
+import { WinnersService } from '../../winners/winners-service.service';
 
 @Component({
   selector: 'app-race-track',
@@ -16,7 +17,8 @@ import { WinnerModalComponent } from '../winner-modal/winner-modal.component';
 export class RaceTrackComponent implements OnInit {
   constructor(
     public garageService: GarageService,
-    public garageActionService: GarageActionService
+    public garageActionService: GarageActionService,
+    private winnersService: WinnersService
   ) {}
   ngOnInit(): void {
     this.garageService.getCars();
@@ -49,6 +51,13 @@ export class RaceTrackComponent implements OnInit {
         this.garageActionService.animationPlayers.splice(index, 1);
       }
     });
+    // after deleting car from garage, we check if that car has any win, if so we call deleteWinner method that removes its wins as well, otherwise request is not sent.
     this.garageService.deleteCar(id);
+    const winnersData = this.winnersService
+      .getWinners(this.garageService.currentPage)
+      .find((car: car) => car.id === id);
+    if (winnersData) {
+      this.garageService.deleteWinner(id);
+    }
   }
 }

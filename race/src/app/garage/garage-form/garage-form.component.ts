@@ -27,6 +27,8 @@ export class GarageFormComponent implements OnInit {
       color: this.garageActionService.garageFG.get('createColorFC')?.value,
     };
     this.garageService.createCar(body);
+    this.garageActionService.garageFG.get('createNameFC')?.reset();
+    this.garageActionService.garageFG.get('createColorFC')?.reset();
   }
 
   onUpdateCars() {
@@ -37,6 +39,9 @@ export class GarageFormComponent implements OnInit {
     };
     if (this.garageActionService.updateCarData.id != -1)
       this.garageService.updateCars(this.garageActionService.updateCarData);
+    this.garageActionService.garageFG.get('updateNameFC')?.reset();
+    this.garageActionService.garageFG.get('updateColorFC')?.reset();
+    this.garageActionService.updateCarData.id = -1;
   }
 
   onStopCar(animatedCar: car | animatedCarI[]) {

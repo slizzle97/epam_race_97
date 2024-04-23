@@ -18,7 +18,7 @@
                 : 'Descending'
             "
           >
-            #<i
+            №<i
               [class]="
                 sortMode.id === null
                   ? 'bi bi-funnel'
@@ -38,7 +38,7 @@
             [title]="
               sortMode.wins === null
                 ? 'Sort'
-                : sortMode.id
+                : sortMode.wins
                 ? 'Ascending'
                 : 'Descending'
             "
@@ -48,7 +48,7 @@
               [class]="
                 sortMode.wins === null
                   ? 'bi bi-funnel'
-                  : sortMode.id
+                  : sortMode.wins
                   ? 'bi bi-sort-up-alt'
                   : 'bi bi-sort-down'
               "
@@ -61,7 +61,7 @@
             [title]="
               sortMode.time === null
                 ? 'Sort'
-                : sortMode.id
+                : sortMode.time
                 ? 'Ascending'
                 : 'Descending'
             "
@@ -71,7 +71,7 @@
               [class]="
                 sortMode.time === null
                   ? 'bi bi-funnel'
-                  : sortMode.id
+                  : sortMode.time
                   ? 'bi bi-sort-up-alt'
                   : 'bi bi-sort-down'
               "

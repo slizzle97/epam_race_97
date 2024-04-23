@@ -46,12 +46,16 @@ export class WinnersService {
     });
   }
 
-  getWinners(sort?: keyof SortModes, order?: string) {
+  getWinners(
+    page?: number,
+    sort?: keyof SortModes,
+    order?: string
+  ): winnerCarData[] {
     this.http
       .get<Winners[]>(
-        `${this.domainURL}/winners/?_page=${this.currentPage}&_limit=${
-          this.winnersPerPage
-        }
+        `${this.domainURL}/winners/?_page=${
+          page != -1 ? page : this.currentPage
+        }&_limit=${this.winnersPerPage}
       ${sort ? '&_sort=' + sort : ''}${order ? '&_order=' + order : ''}`,
         { observe: 'response' }
       )
@@ -71,6 +75,7 @@ export class WinnersService {
             })
             .filter((winner) => winner !== undefined) as winnerCarData[];
       });
+    return this.winnersFullData;
   }
 
   createWinner(body: Winners) {
@@ -128,6 +133,7 @@ export class WinnersService {
       if (nonNullSortModes.length > 0) {
         const firstNonNullSortMode = nonNullSortModes[0][0] as keyof SortModes;
         this.getWinners(
+          -1,
           firstNonNullSortMode,
           sortMode[firstNonNullSortMode] ? 'ASC' : 'DESC'
         );
