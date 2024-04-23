@@ -141,6 +141,7 @@ export class GarageActionService {
       this.startMultipleCars(car);
     } else {
       this.startSingleCar(car);
+      this.updateCarStatus(car.id, { disabled: false });
     }
   }
 
@@ -148,6 +149,7 @@ export class GarageActionService {
     const observables = this.startStatusCar$(cars);
     forkJoin(observables).subscribe((startResults) => {
       startResults.forEach((startResult, index) => {
+        cars[index].disabled = false;
         const singleCar = cars[index];
         if (startResult.velocity) {
           this.handleCarStartAnimation(singleCar, startResult);
@@ -173,7 +175,12 @@ export class GarageActionService {
 
     this.garageService.carAction<isCarDrivable>(car, 'drive').subscribe(
       () => {
-        if (animationTime < this.minAnimationTime) {
+        // with isCarStillAnimated check if car has not been reset,
+        // this assures that if car was still moving and reset button was clicked, CAR WILL NOT BE REGISTRED AS WINNER
+        const isCarStillAnimated = this.animationPlayers.find(
+          (car) => car.id == car.id
+        );
+        if (animationTime < this.minAnimationTime && isCarStillAnimated) {
           this.minAnimationTime = Number(animationTime.toFixed(3));
           this.minAnimationTimeCar = car;
           this.winnersService.getWinner(
@@ -200,6 +207,7 @@ export class GarageActionService {
             .subscribe((stopResult) => {
               if (stopResult.velocity == 0) {
                 this.resetAnimation(singleCar.id);
+                this.updateCarStatus(singleCar.id, { disabled: true });
               }
             });
         }
@@ -213,9 +221,21 @@ export class GarageActionService {
           .subscribe((stopResult) => {
             if (stopResult.velocity == 0) {
               this.resetAnimation(animatedCars.id);
+              this.updateCarStatus(animatedCars.id, { disabled: true });
             }
           });
       }
+    }
+  }
+  updateCarStatus(carId: number, updates: Partial<car>) {
+    const carIndex = this.garageService.cars.findIndex(
+      (car) => car.id === carId
+    );
+    if (carIndex !== -1) {
+      this.garageService.cars[carIndex] = {
+        ...this.garageService.cars[carIndex],
+        ...updates,
+      };
     }
   }
 }

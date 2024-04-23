@@ -132,9 +132,11 @@
 }
 @media screen and (max-width: 640px) {
   button,
-  .car-name,
   .text {
     font-size: 11px;
+  }
+  .car-name {
+    font-size: 16px;
   }
   .button-container {
     gap: 0.3rem;

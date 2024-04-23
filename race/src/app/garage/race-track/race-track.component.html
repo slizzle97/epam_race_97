@@ -23,6 +23,8 @@
           (click)="onStartCar(car)"
           [id]="'start-' + car.id"
           class="default-btn btn-green"
+          [ngClass]="car.disabled ? 'btn-green' : 'disabled-btn'"
+          [disabled]="!car.disabled"
         >
           start
         </button>
@@ -31,6 +33,7 @@
           [id]="'stop-' + car.id"
           class="default-btn"
           [ngClass]="car.disabled ? 'disabled-btn' : 'btn-yellow'"
+          [disabled]="car.disabled"
         >
           <!-- [disabled]="car.disabled" -->
           stop
