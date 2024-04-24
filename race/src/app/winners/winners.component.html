@@ -14,8 +14,8 @@
               sortMode.id === null
                 ? 'Sort'
                 : sortMode.id
-                ? 'Ascending'
-                : 'Descending'
+                  ? 'Ascending'
+                  : 'Descending'
             "
           >
             №<i
@@ -23,8 +23,8 @@
                 sortMode.id === null
                   ? 'bi bi-funnel'
                   : sortMode.id
-                  ? 'bi bi-sort-up-alt'
-                  : 'bi bi-sort-down'
+                    ? 'bi bi-sort-up-alt'
+                    : 'bi bi-sort-down'
               "
             ></i>
           </th>
@@ -39,8 +39,8 @@
               sortMode.wins === null
                 ? 'Sort'
                 : sortMode.wins
-                ? 'Ascending'
-                : 'Descending'
+                  ? 'Ascending'
+                  : 'Descending'
             "
           >
             WINS
@@ -49,8 +49,8 @@
                 sortMode.wins === null
                   ? 'bi bi-funnel'
                   : sortMode.wins
-                  ? 'bi bi-sort-up-alt'
-                  : 'bi bi-sort-down'
+                    ? 'bi bi-sort-up-alt'
+                    : 'bi bi-sort-down'
               "
             ></i>
           </th>
@@ -62,8 +62,8 @@
               sortMode.time === null
                 ? 'Sort'
                 : sortMode.time
-                ? 'Ascending'
-                : 'Descending'
+                  ? 'Ascending'
+                  : 'Descending'
             "
           >
             BEST TIME (SECONDS)
@@ -72,8 +72,8 @@
                 sortMode.time === null
                   ? 'bi bi-funnel'
                   : sortMode.time
-                  ? 'bi bi-sort-up-alt'
-                  : 'bi bi-sort-down'
+                    ? 'bi bi-sort-up-alt'
+                    : 'bi bi-sort-down'
               "
             ></i>
           </th>
@@ -159,7 +159,7 @@
           </td>
           <td>{{ car.name }}</td>
           <td>{{ car.wins }}</td>
-          <td>{{ car.time | number : "1.2-2" }}</td>
+          <td>{{ car.time | number: "1.2-2" }}</td>
         </tr>
       </tbody>
     </table>

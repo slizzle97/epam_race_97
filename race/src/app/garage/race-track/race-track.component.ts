@@ -18,7 +18,7 @@ export class RaceTrackComponent implements OnInit {
   constructor(
     public garageService: GarageService,
     public garageActionService: GarageActionService,
-    private winnersService: WinnersService
+    private winnersService: WinnersService,
   ) {}
   ngOnInit(): void {
     this.garageService.getCars();

@@ -83,7 +83,7 @@ export class GarageService {
       .put(
         `${this.domainURL}/garage/${car.id}`,
         { color: car.color, name: car.name },
-        { headers }
+        { headers },
       )
       .subscribe(() => {
         this.getCars();
@@ -93,7 +93,7 @@ export class GarageService {
   carAction<U>(car: car | animatedCarI, driveMode: string): Observable<U> {
     return this.http.patch(
       `${this.domainURL}/engine/?id=${car.id}&status=${driveMode}`,
-      {}
+      {},
     ) as Observable<U>;
   }
 }

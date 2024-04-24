@@ -8,10 +8,9 @@ describe('GarageFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GarageFormComponent]
-    })
-    .compileComponents();
-    
+      imports: [GarageFormComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(GarageFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -5,7 +5,10 @@ import { GarageService } from './garage-service.service';
 import { BehaviorSubject, Subject, take } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class WinnersService {
-  constructor(private http: HttpClient, private garageService: GarageService) {}
+  constructor(
+    private http: HttpClient,
+    private garageService: GarageService,
+  ) {}
 
   domainURL: string = 'http://127.0.0.1:3000';
 
@@ -49,7 +52,7 @@ export class WinnersService {
   getWinners(
     page: number = -1,
     sort?: keyof SortModes,
-    order?: string
+    order?: string,
   ): winnerCarData[] {
     this.http
       .get<Winners[]>(
@@ -57,7 +60,7 @@ export class WinnersService {
           page != -1 ? page : this.currentPage
         }&_limit=${this.winnersPerPage}
       ${sort ? '&_sort=' + sort : ''}${order ? '&_order=' + order : ''}`,
-        { observe: 'response' }
+        { observe: 'response' },
       )
       .subscribe((res) => {
         this.totalWinners = Number(res.headers.get('X-Total-Count'));
@@ -67,7 +70,7 @@ export class WinnersService {
           this.winnersFullData = res.body
             .map((winner) => {
               const car = this.garageService.cars.find(
-                (car) => car.id === winner.id
+                (car) => car.id === winner.id,
               );
               return car
                 ? { ...car, time: winner.time, wins: winner.wins }
@@ -109,7 +112,7 @@ export class WinnersService {
     body: {
       wins: number;
       time: number;
-    }
+    },
   ) {
     const headers: HttpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -128,14 +131,14 @@ export class WinnersService {
     }
     this.sortMode$.pipe(take(1)).subscribe((sortMode: SortModes) => {
       const nonNullSortModes = Object.entries(sortMode).filter(
-        ([, value]) => value !== null
+        ([, value]) => value !== null,
       );
       if (nonNullSortModes.length > 0) {
         const firstNonNullSortMode = nonNullSortModes[0][0] as keyof SortModes;
         this.getWinners(
           -1,
           firstNonNullSortMode,
-          sortMode[firstNonNullSortMode] ? 'ASC' : 'DESC'
+          sortMode[firstNonNullSortMode] ? 'ASC' : 'DESC',
         );
       } else {
         this.getWinners();

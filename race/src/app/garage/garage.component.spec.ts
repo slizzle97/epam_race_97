@@ -8,10 +8,9 @@ describe('GarageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GarageComponent]
-    })
-    .compileComponents();
-    
+      imports: [GarageComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(GarageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

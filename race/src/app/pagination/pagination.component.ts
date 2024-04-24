@@ -14,7 +14,7 @@ export class PaginationComponent {
   constructor(
     public winnersService: WinnersService,
     public garageService: GarageService,
-    private garageActionService: GarageActionService
+    private garageActionService: GarageActionService,
   ) {}
 
   @Input() paginationLocation: string = '';

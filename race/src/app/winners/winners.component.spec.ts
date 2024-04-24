@@ -8,10 +8,9 @@ describe('WinnersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WinnersComponent]
-    })
-    .compileComponents();
-    
+      imports: [WinnersComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(WinnersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

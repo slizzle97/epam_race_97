@@ -43,7 +43,7 @@ export class GarageActionService {
     private animationBuilder: AnimationBuilder,
     private fb: FormBuilder,
     private winnersService: WinnersService,
-    private browserDetectorService: BrowserDetectorService
+    private browserDetectorService: BrowserDetectorService,
   ) {
     this.garageFG = this.fb.group({
       createNameFC: [''],
@@ -88,7 +88,7 @@ export class GarageActionService {
   startAnimation(duration: number, carID?: number) {
     const screenWidth = window.innerWidth;
     const savedPosition = this.animationPlayers.find(
-      (player) => player.id === carID
+      (player) => player.id === carID,
     )?.animationPosition;
     const startPosition = 'translateX(0)';
     const endPosition = savedPosition
@@ -128,7 +128,7 @@ export class GarageActionService {
           } else {
             return player;
           }
-        }
+        },
       );
     });
   }
@@ -166,7 +166,7 @@ export class GarageActionService {
     const observables: Observable<carSpecs>[] = car
       .filter((singleCar) => singleCar.id !== -1)
       .map((singleCar) =>
-        this.garageService.carAction<carSpecs>(singleCar, 'started')
+        this.garageService.carAction<carSpecs>(singleCar, 'started'),
       );
 
     return observables;
@@ -233,7 +233,7 @@ export class GarageActionService {
   // this assures that if car was still moving and reset button was clicked, CAR WILL NOT BE REGISTRED AS WINNER
   private checkForWinner(animationTime: number, car: car) {
     const isCarStillAnimated = this.animationPlayers.find(
-      (player) => player.id == car.id
+      (player) => player.id == car.id,
     );
     if (animationTime < this.minAnimationTime && isCarStillAnimated) {
       this.minAnimationTime = animationTime;
@@ -241,7 +241,7 @@ export class GarageActionService {
       this.closeModal = 1;
       this.winnersService.getWinner(
         this.minAnimationTimeCar.id,
-        Number(this.minAnimationTime.toFixed(3))
+        Number(this.minAnimationTime.toFixed(3)),
       );
     }
   }
@@ -281,7 +281,7 @@ export class GarageActionService {
   }
   updateCarStatus(carId: number, updates: Partial<car>) {
     const carIndex = this.garageService.cars.findIndex(
-      (car) => car.id === carId
+      (car) => car.id === carId,
     );
     if (carIndex !== -1) {
       this.garageService.cars[carIndex] = {

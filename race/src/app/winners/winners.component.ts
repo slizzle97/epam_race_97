@@ -23,7 +23,7 @@ import { SortModes } from '../../model/winners.model';
 export class WinnersComponent implements OnInit {
   constructor(
     public winnersService: WinnersService,
-    private garageService: GarageService
+    private garageService: GarageService,
   ) {}
   sortMode: SortModes = { wins: false, time: false, id: false };
 

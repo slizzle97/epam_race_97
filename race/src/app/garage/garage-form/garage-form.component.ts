@@ -15,7 +15,7 @@ export class GarageFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public garageService: GarageService,
-    public garageActionService: GarageActionService
+    public garageActionService: GarageActionService,
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +63,7 @@ export class GarageFormComponent implements OnInit {
         this.garageService.cars.forEach((carOnPage) => {
           if (carOnPage.id === player.id) {
             const carEl = document.querySelector(
-              '.car-' + carOnPage.id
+              '.car-' + carOnPage.id,
             ) as HTMLElement;
             if (carEl) {
               carEl.style.transform = `translateX(${
