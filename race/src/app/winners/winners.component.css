@@ -33,6 +33,18 @@ tr {
   width: 100%;
   padding: 1rem;
 }
+.winners-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  margin: 1rem 0.5rem;
+}
+.winners-footer .amount {
+  text-transform: uppercase;
+  font-size: 20px;
+  text-shadow: 0 0 2px var(--lime-green);
+}
 
 @media screen and (max-width: 1280px) {
   td {

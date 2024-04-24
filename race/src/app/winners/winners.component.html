@@ -185,6 +185,12 @@
         <i class="bi bi-caret-right"></i>
       </button>
     </div> -->
-    <app-pagination [paginationLocation]="'winnersPage'"></app-pagination>
+    <div class="winners-footer">
+      <div class="amount color1 fs24">
+        winners({{ winnersService.totalWinners }})
+      </div>
+
+      <app-pagination [paginationLocation]="'winnersPage'"></app-pagination>
+    </div>
   </section>
 </div>
