@@ -29,7 +29,7 @@ export class WinnersComponent implements OnInit {
 
   ngOnInit(): void {
     this.garageService.getCars(true);
-    this.winnersService.getWinners();
+    this.winnersService.getWinners(-1);
     this.winnersService.sortMode$.subscribe((mode) => {
       this.sortMode = mode;
     });

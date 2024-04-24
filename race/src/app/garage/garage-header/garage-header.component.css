@@ -14,9 +14,17 @@
 .title {
   font-size: 30px;
   color: var(--light-purple);
-  text-shadow: 0 0 2px var(--light-purple);
+  text-shadow: 0 0 5px var(--light-purple);
   transform: rotate(-25deg);
+  font-family: "CodyStar", sans-serif;
+  font-weight: 900;
 }
+.title span {
+  color: var(--sky-blue);
+  text-shadow: 0 0 5px var(--sky-blue);
+  font-family: "CodyStar", sans-serif;
+}
+
 .garage-btn,
 .winners-btn {
   min-width: 90px;

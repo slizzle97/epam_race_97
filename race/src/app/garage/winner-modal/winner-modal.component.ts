@@ -13,6 +13,6 @@ export class WinnerModalComponent {
   constructor(public garageActionService: GarageActionService) {}
 
   closeModal() {
-    this.garageActionService.minAnimationTimeCar.id = -1;
+    this.garageActionService.closeModal = -1;
   }
 }

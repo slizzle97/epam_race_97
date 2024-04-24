@@ -27,7 +27,7 @@ export class PaginationComponent {
           this.garageService.currentPage++;
           this.garageService.getCars();
           this.garageActionService.minAnimationTime = Number.MAX_VALUE;
-          this.garageActionService.minAnimationTimeCar.id = -1;
+          this.garageActionService.closeModal = -1;
         }
       } else {
         if (this.garageService.currentPage > 1) {

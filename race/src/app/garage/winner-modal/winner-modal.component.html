@@ -1,7 +1,4 @@
-<div
-  class="modal-data"
-  *ngIf="garageActionService.minAnimationTimeCar.id !== -1"
->
+<div class="modal-data" *ngIf="garageActionService.closeModal !== -1">
   <button (click)="closeModal()">
     <i class="bi bi-x-circle"></i>
   </button>
@@ -10,6 +7,6 @@
     garageActionService.minAnimationTimeCar.name
   }}</span>
   <span class="winner-time"
-    >time: {{ garageActionService.minAnimationTime }}&nbsp;s</span
+    >time: {{ garageActionService.minAnimationTime.toFixed(3) }}&nbsp;s</span
   >
 </div>

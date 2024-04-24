@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GarageService } from './garage-service.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import {
   AnimationBuilder,
   AnimationFactory,
@@ -15,25 +15,33 @@ import {
   isCarDrivable,
 } from '../../model/race.model';
 import { WinnersService } from '../winners/winners-service.service';
+import { BrowserDetectorService } from '../Services/browserDetectorService.service';
 
 @Injectable({ providedIn: 'root' })
 export class GarageActionService {
   garageFG: FormGroup;
+
   constructor(
     private garageService: GarageService,
     private animationBuilder: AnimationBuilder,
     private fb: FormBuilder,
-    private winnersService: WinnersService
+    private winnersService: WinnersService,
+    private browserDetectorService: BrowserDetectorService
   ) {
-    this.garageFG = fb.group({
+    this.garageFG = this.fb.group({
       createNameFC: [''],
       createColorFC: ['#000'],
       updateNameFC: [''],
       updateColorFC: [''],
     });
+
+    this.updateScreenSize();
+    window.addEventListener('resize', () => this.updateScreenSize());
   }
 
   public animationPlayers: animatedCarI[] = [];
+  animationPostion: number = 270;
+  closeModal: number = -1;
 
   updateCarData: car = {
     name: '',
@@ -47,8 +55,34 @@ export class GarageActionService {
     color: '',
     id: -1,
   };
-
-  animationState: { [carId: number]: string } = {};
+  // set car finish position for cross platform compatibility
+  private updateScreenSize() {
+    const screenWidth = window.innerWidth;
+    if (
+      this.browserDetectorService.browserName === 'Chrome' ||
+      this.browserDetectorService.browserName === 'Opera'
+    ) {
+      if (screenWidth > 1100) {
+        this.animationPostion = 270;
+      } else if (screenWidth > 1080 && screenWidth < 1100) {
+        this.animationPostion = 265;
+      } else if (screenWidth >= 640 && screenWidth < 1080) {
+        this.animationPostion = 260;
+      } else if (screenWidth < 640) {
+        this.animationPostion = 240;
+      }
+    } else if (this.browserDetectorService.browserName === 'Firefox') {
+      if (screenWidth > 1200) {
+        this.animationPostion = 250;
+      } else if (screenWidth > 1000 && screenWidth < 1200) {
+        this.animationPostion = 245;
+      } else if (screenWidth >= 640 && screenWidth < 1000) {
+        this.animationPostion = 240;
+      } else if (screenWidth < 640) {
+        this.animationPostion = 220;
+      }
+    }
+  }
 
   startAnimation(duration: number, carID?: number) {
     const screenWidth = window.innerWidth;
@@ -58,7 +92,7 @@ export class GarageActionService {
     const startPosition = 'translateX(0)';
     const endPosition = savedPosition
       ? `translateX(${screenWidth * savedPosition}px)`
-      : `translateX(${screenWidth - 270}px)`;
+      : `translateX(${screenWidth - this.animationPostion}px)`;
     const animation = this.animationBuilder.build([
       style({ transform: startPosition }),
       animate(duration + 's', style({ transform: endPosition })),
@@ -80,7 +114,8 @@ export class GarageActionService {
       id: carID,
       player: player,
     });
-    // after animation is done, so the car reached the finish line, its position is saved, so that after paging, it's position is not lost;
+    // after animation is done, so the car reached the finish line,
+    // its position is saved, so that after paging, it's position is not lost;
     player.onDone(() => {
       this.animationPlayers = this.animationPlayers.map(
         (player: animatedCarI) => {
@@ -110,7 +145,7 @@ export class GarageActionService {
         player.player.reset();
         this.animationPlayers.splice(index, 1);
         const el = document.querySelector('.car-' + player.id) as HTMLElement;
-        el.style.transform = 'translateX(0)';
+        if (el) el.style.transform = 'translateX(0)';
       }
     });
   }
@@ -127,13 +162,13 @@ export class GarageActionService {
   }
 
   startStatusCar$(car: car[]) {
-    const observables = car.map((singleCar) => {
-      return this.garageService.carAction<carSpecs>(singleCar, 'started');
-    });
+    const observables: Observable<carSpecs>[] = car
+      .filter((singleCar) => singleCar.id !== -1)
+      .map((singleCar) =>
+        this.garageService.carAction<carSpecs>(singleCar, 'started')
+      );
+
     return observables;
-  }
-  calcAnimTime(startResult: carSpecs) {
-    return startResult.distance / (startResult.velocity * 1000);
   }
 
   startCar(car: car | car[]) {
@@ -167,34 +202,47 @@ export class GarageActionService {
         }
       });
   }
+  calcAnimTime(startResult: carSpecs) {
+    return startResult.distance / (startResult.velocity * 1000);
+  }
 
   private handleCarStartAnimation(car: car, startResult: carSpecs) {
     const animationTime = this.calcAnimTime(startResult);
 
+    //first we start the animation and call drive service. if service returns server error we stop animation,
+    // if not, we check if car is the fastest, therefore won the race register it as winner.
     this.startAnimation(animationTime, car.id);
 
-    this.garageService.carAction<isCarDrivable>(car, 'drive').subscribe(
-      () => {
-        // with isCarStillAnimated check if car has not been reset,
-        // this assures that if car was still moving and reset button was clicked, CAR WILL NOT BE REGISTRED AS WINNER
-        const isCarStillAnimated = this.animationPlayers.find(
-          (car) => car.id == car.id
-        );
-        if (animationTime < this.minAnimationTime && isCarStillAnimated) {
-          this.minAnimationTime = Number(animationTime.toFixed(3));
-          this.minAnimationTimeCar = car;
-          this.winnersService.getWinner(
-            this.minAnimationTimeCar.id,
-            this.minAnimationTime
-          );
-        }
-      },
-      (error) => {
+    const driveObservable: Observable<isCarDrivable> =
+      this.garageService.carAction<isCarDrivable>(car, 'drive');
+
+    driveObservable.subscribe({
+      next: () => {},
+      error: (error) => {
         if (error.status === 500) {
           this.stopAnimation(car.id);
         }
-      }
+      },
+      complete: () => {
+        this.checkForWinner(animationTime, car);
+      },
+    });
+  }
+  // with isCarStillAnimated check if car has not been reset,
+  // this assures that if car was still moving and reset button was clicked, CAR WILL NOT BE REGISTRED AS WINNER
+  private checkForWinner(animationTime: number, car: car) {
+    const isCarStillAnimated = this.animationPlayers.find(
+      (player) => player.id == car.id
     );
+    if (animationTime < this.minAnimationTime && isCarStillAnimated) {
+      this.minAnimationTime = animationTime;
+      this.minAnimationTimeCar = car;
+      this.closeModal = 1;
+      this.winnersService.getWinner(
+        this.minAnimationTimeCar.id,
+        Number(this.minAnimationTime.toFixed(3))
+      );
+    }
   }
 
   stopCar(animatedCars: car | animatedCarI[]) {
@@ -212,8 +260,12 @@ export class GarageActionService {
             });
         }
       });
-      this.minAnimationTime = Number.MAX_VALUE;
-      this.minAnimationTimeCar.id = -1;
+
+      setTimeout(() => {
+        if (this.animationPlayers.length === 0)
+          this.minAnimationTime = Number.MAX_VALUE;
+        this.closeModal = -1;
+      }, 1000);
     } else {
       if (this.garageService.cars.some((car) => car.id === animatedCars.id)) {
         this.garageService
