@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GarageHeaderComponent } from '../garage/garage-header/garage-header.component';
-import { WinnersService } from './winners-service.service';
+import { WinnersService } from '../Services/winners-service.service';
 import { CommonModule, NgFor } from '@angular/common';
-import { GarageService } from '../garage/garage-service.service';
+import { GarageService } from '../Services/garage-service.service';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { SortModes } from '../../model/winners.model';
 
@@ -29,7 +29,7 @@ export class WinnersComponent implements OnInit {
 
   ngOnInit(): void {
     this.garageService.getCars(true);
-    this.winnersService.getWinners(-1);
+    this.winnersService.getWinners();
     this.winnersService.sortMode$.subscribe((mode) => {
       this.sortMode = mode;
     });

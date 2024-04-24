@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { GarageActionService } from '../garage-action-service.service';
+import { GarageActionService } from '../../Services/garage-action-service.service';
 import { NgIf } from '@angular/common';
 
 @Component({

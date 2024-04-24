@@ -1,5 +1,5 @@
 <div class="pagination color2 fs24">
-  <button (click)="pageChange('decrement')">
+  <button (click)="onPageChange('decrement')">
     <i class="bi bi-caret-left"></i>
   </button>
   <span class="fs-24"
@@ -9,7 +9,7 @@
         : winnersService.currentPage
     }}</span
   >
-  <button (click)="pageChange('increment')">
+  <button (click)="onPageChange('increment')">
     <i class="bi bi-caret-right"></i>
   </button>
 </div>

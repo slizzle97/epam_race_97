@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { WinnersService } from '../winners/winners-service.service';
-import { GarageService } from '../garage/garage-service.service';
-import { GarageActionService } from '../garage/garage-action-service.service';
+import { WinnersService } from '../Services/winners-service.service';
+import { GarageService } from '../Services/garage-service.service';
+import { GarageActionService } from '../Services/garage-action-service.service';
 
 @Component({
   selector: 'app-pagination',
@@ -19,8 +19,7 @@ export class PaginationComponent {
 
   @Input() paginationLocation: string = '';
   pageNumber: number = 0;
-
-  pageChange(actionMode: string) {
+  onPageChange(actionMode: string) {
     if (this.paginationLocation === 'garagePage') {
       if (actionMode === 'increment') {
         if (this.garageService.currentPage < this.garageService.totalPages) {

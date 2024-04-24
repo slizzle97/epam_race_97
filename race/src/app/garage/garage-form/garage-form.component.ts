@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { GarageService } from '../garage-service.service';
-import { GarageActionService } from '../garage-action-service.service';
+import { GarageService } from '../../Services/garage-service.service';
+import { GarageActionService } from '../../Services/garage-action-service.service';
 import { animatedCarI, car, createCar } from '../../../model/race.model';
 
 @Component({
@@ -68,8 +68,9 @@ export class GarageFormComponent implements OnInit {
             if (carEl) {
               carEl.style.transform = `translateX(${
                 player.animationPosition
-                  ? (screenWidth - 300) * player.animationPosition
-                  : screenWidth - 300
+                  ? (screenWidth - this.garageActionService.animationPostion) *
+                    player.animationPosition
+                  : screenWidth - this.garageActionService.animationPostion
               }px)`;
             }
           }

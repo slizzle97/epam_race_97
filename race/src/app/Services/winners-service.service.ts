@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SortModes, Winners, winnerCarData } from '../../model/winners.model';
-import { GarageService } from '../garage/garage-service.service';
+import { GarageService } from './garage-service.service';
 import { BehaviorSubject, Subject, take } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class WinnersService {
@@ -47,7 +47,7 @@ export class WinnersService {
   public carRemovedSubject = new Subject<number>();
 
   getWinners(
-    page: number,
+    page: number = -1,
     sort?: keyof SortModes,
     order?: string
   ): winnerCarData[] {
@@ -138,7 +138,7 @@ export class WinnersService {
           sortMode[firstNonNullSortMode] ? 'ASC' : 'DESC'
         );
       } else {
-        this.getWinners(-1);
+        this.getWinners();
       }
     });
   }

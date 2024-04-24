@@ -14,30 +14,12 @@ import {
   carSpecs,
   isCarDrivable,
 } from '../../model/race.model';
-import { WinnersService } from '../winners/winners-service.service';
-import { BrowserDetectorService } from '../Services/browserDetectorService.service';
+import { WinnersService } from './winners-service.service';
+import { BrowserDetectorService } from './browserDetectorService.service';
 
 @Injectable({ providedIn: 'root' })
 export class GarageActionService {
   garageFG: FormGroup;
-
-  constructor(
-    private garageService: GarageService,
-    private animationBuilder: AnimationBuilder,
-    private fb: FormBuilder,
-    private winnersService: WinnersService,
-    private browserDetectorService: BrowserDetectorService
-  ) {
-    this.garageFG = this.fb.group({
-      createNameFC: [''],
-      createColorFC: ['#000'],
-      updateNameFC: [''],
-      updateColorFC: [''],
-    });
-
-    this.updateScreenSize();
-    window.addEventListener('resize', () => this.updateScreenSize());
-  }
 
   public animationPlayers: animatedCarI[] = [];
   animationPostion: number = 270;
@@ -55,6 +37,25 @@ export class GarageActionService {
     color: '',
     id: -1,
   };
+
+  constructor(
+    private garageService: GarageService,
+    private animationBuilder: AnimationBuilder,
+    private fb: FormBuilder,
+    private winnersService: WinnersService,
+    private browserDetectorService: BrowserDetectorService
+  ) {
+    this.garageFG = this.fb.group({
+      createNameFC: [''],
+      createColorFC: ['#000'],
+      updateNameFC: [''],
+      updateColorFC: [''],
+    });
+    // set car finish position on resize
+    this.updateScreenSize();
+    window.addEventListener('resize', () => this.updateScreenSize());
+  }
+
   // set car finish position for cross platform compatibility
   private updateScreenSize() {
     const screenWidth = window.innerWidth;
@@ -160,7 +161,7 @@ export class GarageActionService {
       });
     }
   }
-
+  // returns array of observables of car velocity/distance
   startStatusCar$(car: car[]) {
     const observables: Observable<carSpecs>[] = car
       .filter((singleCar) => singleCar.id !== -1)
@@ -260,7 +261,6 @@ export class GarageActionService {
             });
         }
       });
-
       setTimeout(() => {
         if (this.animationPlayers.length === 0)
           this.minAnimationTime = Number.MAX_VALUE;

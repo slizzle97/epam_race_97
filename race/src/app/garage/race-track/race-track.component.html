@@ -35,7 +35,6 @@
           [ngClass]="car.disabled ? 'disabled-btn' : 'btn-yellow'"
           [disabled]="car.disabled"
         >
-          <!-- [disabled]="car.disabled" -->
           stop
         </button>
       </div>
@@ -134,30 +133,6 @@
   </div>
   <div class="race-footer">
     <div class="amount color1 fs24">garage({{ garageService.totalCars }})</div>
-    <!-- <div class="pagination color2 fs24">
-      <button
-        (click)="
-          garageActionService.currentPage =
-            garageActionService.currentPage > 1
-              ? garageActionService.currentPage - 1
-              : 1
-        "
-      >
-        <i class="bi bi-caret-left"></i>
-      </button>
-      <span class="fs-24">Page #{{ garageActionService.currentPage }}</span>
-      <button
-        (click)="
-          garageActionService.currentPage =
-            garageActionService.currentPage <
-            garageActionService.getTotalPages()
-              ? garageActionService.currentPage + 1
-              : garageActionService.getTotalPages()
-        "
-      >
-        <i class="bi bi-caret-right"></i>
-      </button>
-    </div> -->
     <app-pagination [paginationLocation]="'garagePage'"></app-pagination>
   </div>
 </section>
