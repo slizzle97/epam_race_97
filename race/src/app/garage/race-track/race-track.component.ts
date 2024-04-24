@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GarageService } from '../../Services/garage-service.service';
 import { GarageActionService } from '../../Services/garage-action-service.service';
 import { CommonModule, NgIf } from '@angular/common';
-import { car, animatedCarI } from '../../../model/race.model';
+import { car, animatedCarI } from '../../interfaces/IGarage';
 import { PaginationComponent } from '../../pagination/pagination.component';
 import { WinnerModalComponent } from '../winner-modal/winner-modal.component';
 import { WinnersService } from '../../Services/winners-service.service';

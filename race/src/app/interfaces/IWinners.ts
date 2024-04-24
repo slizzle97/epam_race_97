@@ -1,4 +1,4 @@
-import { car } from './race.model';
+import { car } from './IGarage';
 
 export interface Winners {
   id: number;

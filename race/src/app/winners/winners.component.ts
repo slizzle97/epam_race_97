@@ -5,7 +5,7 @@ import { WinnersService } from '../Services/winners-service.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { GarageService } from '../Services/garage-service.service';
 import { PaginationComponent } from '../pagination/pagination.component';
-import { SortModes } from '../../model/winners.model';
+import { SortModes } from '../interfaces/IWinners';
 
 @Component({
   selector: 'app-winners',

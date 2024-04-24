@@ -1,16 +1,15 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SortModes, Winners, winnerCarData } from '../../model/winners.model';
+import { SortModes, Winners, winnerCarData } from '../interfaces/IWinners';
 import { GarageService } from './garage-service.service';
-import { BehaviorSubject, Subject, take } from 'rxjs';
+import { BehaviorSubject, take } from 'rxjs';
+import { environment } from '../../environment';
 @Injectable({ providedIn: 'root' })
 export class WinnersService {
   constructor(
     private http: HttpClient,
     private garageService: GarageService,
   ) {}
-
-  domainURL: string = 'http://127.0.0.1:3000';
 
   winnersFullData: winnerCarData[] = [];
 
@@ -47,8 +46,6 @@ export class WinnersService {
       }
     });
   }
-  public carRemovedSubject = new Subject<number>();
-
   getWinners(
     page: number = -1,
     sort?: keyof SortModes,
@@ -56,7 +53,7 @@ export class WinnersService {
   ): winnerCarData[] {
     this.http
       .get<Winners[]>(
-        `${this.domainURL}/winners/?_page=${
+        `${environment.API_URL}/winners/?_page=${
           page != -1 ? page : this.currentPage
         }&_limit=${this.winnersPerPage}
       ${sort ? '&_sort=' + sort : ''}${order ? '&_order=' + order : ''}`,
@@ -86,12 +83,12 @@ export class WinnersService {
       'Content-Type': 'application/json',
     });
     this.http
-      .post<Winners>(`${this.domainURL}/winners`, body, { headers })
+      .post<Winners>(`${environment.API_URL}/winners`, body, { headers })
       .subscribe();
   }
   getWinner(carID: number, time: number) {
     this.http
-      .get<Winners[]>(`${this.domainURL}/winners/?id=${carID}`)
+      .get<Winners[]>(`${environment.API_URL}/winners/?id=${carID}`)
 
       // check if service returns empty array, meaning can has never won yet, so we create a winner, or returning array of object, therefore updating its wins and time if improved
       .subscribe((res) => {
@@ -118,7 +115,7 @@ export class WinnersService {
       'Content-Type': 'application/json',
     });
     this.http
-      .put(`${this.domainURL}/winners/${carID}`, body, { headers })
+      .put(`${environment.API_URL}/winners/${carID}`, body, { headers })
       .subscribe();
   }
 

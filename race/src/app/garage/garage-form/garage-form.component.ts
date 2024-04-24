@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { GarageService } from '../../Services/garage-service.service';
 import { GarageActionService } from '../../Services/garage-action-service.service';
-import { animatedCarI, car, createCar } from '../../../model/race.model';
+import { animatedCarI, car, createCar } from '../../interfaces/IGarage';
 
 @Component({
   selector: 'app-garage-form',

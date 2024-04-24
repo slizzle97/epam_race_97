@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { animatedCarI, car, createCar } from '../../model/race.model';
+import { animatedCarI, car, createCar } from '../interfaces/IGarage';
 import { carMarks, carModels } from '../../json/car-marks';
+import { environment } from '../../environment';
 @Injectable({ providedIn: 'root' })
 export class GarageService {
   constructor(private http: HttpClient) {}
@@ -12,7 +13,6 @@ export class GarageService {
   carsPerPage: number = 7;
   totalCars: number = 0;
   totalPages: number = 0;
-  domainURL: string = 'http://127.0.0.1:3000';
   carMarks: string[] = carMarks;
   carModels: { [brand: string]: string[] } = carModels;
 
@@ -42,8 +42,8 @@ export class GarageService {
   }
   getCars(fromWinner?: boolean) {
     const url = fromWinner
-      ? `${this.domainURL}/garage/`
-      : `${this.domainURL}/garage/?_page=${this.currentPage}&_limit=${this.carsPerPage}`;
+      ? `${environment.API_URL}/garage/`
+      : `${environment.API_URL}/garage/?_page=${this.currentPage}&_limit=${this.carsPerPage}`;
     this.http.get<car[]>(url, { observe: 'response' }).subscribe((res) => {
       this.totalCars = Number(res.headers.get('X-Total-Count'));
       this.totalPages = Math.ceil(this.totalCars / this.carsPerPage);
@@ -61,19 +61,19 @@ export class GarageService {
       'Content-Type': 'application/json',
     });
     this.http
-      .post(`${this.domainURL}/garage`, body, { headers })
+      .post(`${environment.API_URL}/garage`, body, { headers })
       .subscribe(() => {
         this.getCars();
       });
   }
 
   deleteCar(id: number) {
-    this.http.delete(`${this.domainURL}/garage/${id}`).subscribe(() => {
+    this.http.delete(`${environment.API_URL}/garage/${id}`).subscribe(() => {
       this.getCars();
     });
   }
   deleteWinner(id: number) {
-    this.http.delete(`${this.domainURL}/winners/${id}`).subscribe();
+    this.http.delete(`${environment.API_URL}/winners/${id}`).subscribe();
   }
   updateCars(car: car) {
     const headers: HttpHeaders = new HttpHeaders({
@@ -81,7 +81,7 @@ export class GarageService {
     });
     this.http
       .put(
-        `${this.domainURL}/garage/${car.id}`,
+        `${environment.API_URL}/garage/${car.id}`,
         { color: car.color, name: car.name },
         { headers },
       )
@@ -92,7 +92,7 @@ export class GarageService {
 
   carAction<U>(car: car | animatedCarI, driveMode: string): Observable<U> {
     return this.http.patch(
-      `${this.domainURL}/engine/?id=${car.id}&status=${driveMode}`,
+      `${environment.API_URL}/engine/?id=${car.id}&status=${driveMode}`,
       {},
     ) as Observable<U>;
   }

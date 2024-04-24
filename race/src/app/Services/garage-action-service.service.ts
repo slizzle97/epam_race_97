@@ -13,7 +13,7 @@ import {
   car,
   carSpecs,
   isCarDrivable,
-} from '../../model/race.model';
+} from '../interfaces/IGarage';
 import { WinnersService } from './winners-service.service';
 import { BrowserDetectorService } from './browserDetectorService.service';
 
